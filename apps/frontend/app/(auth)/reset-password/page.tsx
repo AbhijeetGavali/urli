@@ -3,8 +3,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useDispatch } from 'react-redux'
-import { useResetPasswordMutation } from '../../store/api/authApi'
-import { showToast } from '../../store/slices/uiSlice'
+import { useResetPasswordMutation } from '../../../store/api/authApi'
+import { showToast } from '../../../store/slices/uiSlice'
 
 export default function ResetPasswordPage() {
   const router = useRouter()
@@ -12,7 +12,7 @@ export default function ResetPasswordPage() {
   const dispatch = useDispatch()
   const [resetPassword, { isLoading }] = useResetPasswordMutation()
   const [password, setPassword] = useState('')
-  const token = searchParams.get('token') || ''
+  const token = searchParams?.get('token') || ''
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

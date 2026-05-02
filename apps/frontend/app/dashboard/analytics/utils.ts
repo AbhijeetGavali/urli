@@ -1,7 +1,7 @@
 export function formatChartData(daily: { date: string; count: number }[]) {
   // Fill missing days with 0
   const map = Object.fromEntries(daily.map(d => [d.date, d.count]))
-  const result = []
+  const result: { date: string; count: number }[] = []
   for (let i = 29; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i)
     const key = d.toISOString().split('T')[0]

@@ -3,6 +3,8 @@ import './globals.css'
 import { ReduxProvider } from '../components/ReduxProvider'
 import { Toast } from '../components/Toast'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://urli.ideasprout.in'),
   title: { default: 'Urli — Smart URL Shortener with Analytics', template: '%s | Urli' },
