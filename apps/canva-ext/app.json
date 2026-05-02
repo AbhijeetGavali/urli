@@ -1,8 +1,12 @@
 {
   "id": "urli-url-shortener",
-  "name": "Urli — URL Shortener",
+  "name": "Urli - URL Shortener",
   "version": "1.0.0",
   "description": "Shorten URLs directly in Canva. Track clicks with analytics.",
-  "permissions": ["network:fetch"],
-  "domains": { "appOrigin": "https://canva-ext.urli.app" }
+  "permissions": [
+    "network:fetch"
+  ],
+  "domains": {
+    "appOrigin": "https://canva-ext.urli.ideasprout.in"
+  }
 }
