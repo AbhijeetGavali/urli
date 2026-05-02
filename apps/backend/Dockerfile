@@ -4,7 +4,6 @@ RUN npm install -g pnpm
 FROM base AS deps
 WORKDIR /app
 COPY package.json ./
-# Install without frozen-lockfile since lockfile is at monorepo root
 RUN pnpm install --ignore-scripts
 
 FROM base AS builder
@@ -15,6 +14,8 @@ RUN pnpm db:generate
 RUN pnpm build
 
 FROM node:20-alpine AS runner
+# Prisma query engine requires OpenSSL on Alpine
+RUN apk add --no-cache openssl
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder /app/dist ./dist
