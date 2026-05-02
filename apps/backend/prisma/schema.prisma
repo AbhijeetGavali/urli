@@ -7,11 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role { USER ADMIN }
-enum Plan { FREE PRO BUSINESS }
-enum SubStatus { TRIALING ACTIVE CANCELLED EXPIRED }
-enum WorkspaceRole { OWNER ADMIN EDITOR VIEWER }
-enum PixelType { FACEBOOK GOOGLE }
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Plan {
+  FREE
+  PRO
+  BUSINESS
+}
+
+enum SubStatus {
+  TRIALING
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum PixelType {
+  FACEBOOK
+  GOOGLE
+}
 
 model User {
   id                String    @id @default(cuid())
@@ -33,42 +57,42 @@ model User {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  links             Link[]
-  clicks            Click[]
-  utmTemplates      UTMTemplate[]
-  workspaces        WorkspaceMember[]
-  ownedWorkspaces   Workspace[]
-  subscription      Subscription?
-  apiKeys           ApiKey[]
-  bioPage           BioPage?
-  pixels            Pixel[]
-  customDomains     CustomDomain[]
+  links           Link[]
+  clicks          Click[]
+  utmTemplates    UTMTemplate[]
+  workspaces      WorkspaceMember[]
+  ownedWorkspaces Workspace[]
+  subscription    Subscription?
+  apiKeys         ApiKey[]
+  bioPage         BioPage?
+  pixels          Pixel[]
+  customDomains   CustomDomain[]
 }
 
 model Link {
-  id           String    @id @default(cuid())
-  slug         String    @unique
-  originalUrl  String
-  title        String?
-  userId       String
-  workspaceId  String?
-  expiresAt    DateTime?
-  maxClicks    Int?
-  clickCount   Int       @default(0)
-  isActive     Boolean   @default(true)
-  utmSource    String?
-  utmMedium    String?
-  utmCampaign  String?
-  utmTerm      String?
-  utmContent   String?
-  pixelIds     String[]  @default([])
-  smartRules   Json?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  originalUrl String
+  title       String?
+  userId      String
+  workspaceId String?
+  expiresAt   DateTime?
+  maxClicks   Int?
+  clickCount  Int       @default(0)
+  isActive    Boolean   @default(true)
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmTerm     String?
+  utmContent  String?
+  pixelIds    String[]  @default([])
+  smartRules  Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workspace    Workspace? @relation(fields: [workspaceId], references: [id])
-  clicks       Click[]
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace? @relation(fields: [workspaceId], references: [id])
+  clicks    Click[]
 
   @@index([slug])
   @@index([userId])
@@ -87,8 +111,8 @@ model Click {
   referrer  String?
   createdAt DateTime @default(now())
 
-  link      Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
-  user      User?    @relation(fields: [userId], references: [id])
+  link Link  @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id])
 
   @@index([linkId])
   @@index([userId])
@@ -96,7 +120,7 @@ model Click {
 }
 
 model UTMTemplate {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   userId      String
   workspaceId String?
   name        String
@@ -105,19 +129,19 @@ model UTMTemplate {
   campaign    String?
   term        String?
   content     String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
 
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workspace   Workspace? @relation(fields: [workspaceId], references: [id])
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace? @relation(fields: [workspaceId], references: [id])
 }
 
 model Workspace {
-  id           String   @id @default(cuid())
-  name         String
-  ownerId      String
-  createdAt    DateTime @default(now())
+  id        String   @id @default(cuid())
+  name      String
+  ownerId   String
+  createdAt DateTime @default(now())
 
-  owner        User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner        User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   members      WorkspaceMember[]
   links        Link[]
   utmTemplates UTMTemplate[]
@@ -129,8 +153,8 @@ model WorkspaceMember {
   role        WorkspaceRole @default(VIEWER)
   joinedAt    DateTime      @default(now())
 
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([workspaceId, userId])
 }
@@ -147,7 +171,7 @@ model Subscription {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ApiKey {
@@ -159,7 +183,7 @@ model ApiKey {
   lastUsedAt  DateTime?
   createdAt   DateTime  @default(now())
 
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([key])
 }
@@ -176,7 +200,7 @@ model BioPage {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([slug])
 }
@@ -189,19 +213,19 @@ model Pixel {
   pixelId   String
   createdAt DateTime  @default(now())
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model CustomDomain {
-  id         String   @id @default(cuid())
-  userId     String
-  domain     String   @unique
-  verified   Boolean  @default(false)
-  verifyToken String  @unique
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(cuid())
+  userId      String
+  domain      String   @unique
+  verified    Boolean  @default(false)
+  verifyToken String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([domain])
 }

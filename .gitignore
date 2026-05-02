@@ -8,3 +8,6 @@ build
 .DS_Store
 coverage
 prisma/migrations/*.sql
+
+package-lock.json
+yarn.lock
