@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/:slug((?!_next|api|dashboard|login|register|forgot-password|reset-password|pricing|blog|privacy|terms|cookies|refund|account-deletion|guides|b|expired|sitemap.xml|robots.txt|favicon.ico).*)",
+      "destination": "https://api-urli.ideasprout.in/r/:slug"
+    }
+  ]
+}

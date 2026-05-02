@@ -8,6 +8,7 @@ import { formatDate, shortUrl, copyToClipboard, getLinkStatus, STATUS_COLORS } f
 import { CreateLinkModal } from '../../components/CreateLinkModal'
 import { EditLinkModal } from '../../components/EditLinkModal'
 import Link from 'next/link'
+import { Link2, MousePointerClick, TrendingUp, Plus } from 'lucide-react'
 
 export default function DashboardPage() {
   const dispatch = useDispatch()
@@ -36,14 +37,18 @@ export default function DashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 md:gap-4 mb-6">
         {[
-          { label: 'Total links', value: overview?.totalLinks ?? '—', icon: '🔗' },
-          { label: 'Total clicks', value: overview?.totalClicks ?? '—', icon: '👆' },
-          { label: 'Last 30 days', value: overview?.recentClicks ?? '—', icon: '📈' },
-        ].map(s => (
-          <div key={s.label} className="bg-white rounded-2xl border border-gray-100 p-4 md:p-5">
-            <div className="text-2xl mb-1">{s.icon}</div>
-            <div className="text-2xl font-bold text-gray-900">{s.value}</div>
-            <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
+          { label: 'Total links', value: overview?.totalLinks ?? '—', icon: Link2, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'Total clicks', value: overview?.totalClicks ?? '—', icon: MousePointerClick, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+          { label: 'Last 30 days', value: overview?.recentClicks ?? '—', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+        ].map(({ label, value, icon: Icon, color, bg }) => (
+          <div key={label} className="bg-white rounded-2xl border border-gray-100 p-4 md:p-5 flex items-center gap-4">
+            <div className={`w-10 h-10 ${bg} rounded-xl flex items-center justify-center shrink-0`}>
+              <Icon size={18} className={color} />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-gray-900">{value}</div>
+              <div className="text-xs text-gray-500 mt-0.5">{label}</div>
+            </div>
           </div>
         ))}
       </div>
@@ -55,7 +60,7 @@ export default function DashboardPage() {
           className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
         <button onClick={() => setShowCreate(true)}
           className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap shadow-sm">
-          <span className="text-base leading-none">+</span> New link
+          <Plus size={14} /> New link
         </button>
       </div>
 
@@ -68,7 +73,9 @@ export default function DashboardPage() {
           </div>
         ) : data?.links?.length === 0 ? (
           <div className="p-16 text-center">
-            <div className="text-5xl mb-4">🔗</div>
+            <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Link2 size={24} className="text-gray-400" />
+            </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No links yet</h3>
             <p className="text-sm text-gray-500 mb-6">Create your first short link to start tracking clicks.</p>
             <button onClick={() => setShowCreate(true)}

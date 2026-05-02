@@ -12,8 +12,11 @@ export const adminApi = createApi({
   }),
   tagTypes: ['Users', 'Stats'],
   endpoints: (b) => ({
-    getStats: b.query<any, void>({ query: () => '/admin/stats', providesTags: ['Stats'] }),
-    getUsers: b.query<any, { page?: number; limit?: number }>({
+    getStats: b.query<any, void>({
+      query: () => '/admin/stats',
+      providesTags: ['Stats'],
+    }),
+    getUsers: b.query<any, { page?: number; limit?: number; search?: string }>({
       query: (params) => ({ url: '/admin/users', params }),
       providesTags: ['Users'],
     }),
@@ -21,7 +24,16 @@ export const adminApi = createApi({
       query: ({ id, data }) => ({ url: `/admin/users/${id}`, method: 'PATCH', body: data }),
       invalidatesTags: ['Users'],
     }),
+    suspendUser: b.mutation<any, { id: string; suspended: boolean }>({
+      query: ({ id, suspended }) => ({ url: `/admin/users/${id}/suspend`, method: 'POST', body: { suspended } }),
+      invalidatesTags: ['Users'],
+    }),
   }),
 })
 
-export const { useGetStatsQuery, useGetUsersQuery, useUpdateUserMutation } = adminApi
+export const {
+  useGetStatsQuery,
+  useGetUsersQuery,
+  useUpdateUserMutation,
+  useSuspendUserMutation,
+} = adminApi
