@@ -1,0 +1,16 @@
+{
+  "name": "urli",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev:backend": "pnpm --filter backend dev",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:admin": "pnpm --filter admin dev",
+    "dev:chrome": "pnpm --filter chrome-ext dev",
+    "build:all": "pnpm --filter backend build && pnpm --filter frontend build && pnpm --filter admin build",
+    "db:migrate": "pnpm --filter backend db:migrate",
+    "db:generate": "pnpm --filter backend db:generate",
+    "db:studio": "pnpm --filter backend db:studio"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

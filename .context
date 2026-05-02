@@ -1,0 +1,181 @@
+# TinyURL SaaS — Project Context (Source of Truth)
+
+## Business Summary
+URL Shortener & Link Manager SaaS targeting the $1.1B market.
+Positioning: Full-featured at $15/mo — cheaper than Bitly Growth ($29), with features no competitor offers at this price.
+Key differentiators: No ads ever, link expiry, retargeting pixels, UTM presets, link-in-bio, smart redirects.
+
+## Pricing Tiers
+- Starter: Free — 50 links/mo, basic analytics 30 days, static QR
+- Pro: $15/mo — unlimited links, 1 custom domain, forever analytics, expiry, UTM, pixels, dynamic QR, Chrome ext, bio page, API
+- Business: $49/mo — everything Pro + 5 seats, 3 domains, smart redirects, workspaces, white-label QR, Zapier
+
+## Tech Stack
+- Backend: Fastify + Prisma + PostgreSQL + Redis (Node.js 20)
+- Frontend: Next.js 14 (App Router) + Redux Toolkit + Tailwind CSS
+- Admin: Next.js 14 (separate package)
+- Extensions: React + Vite (Chrome, Etsy, Canva), Shopify Remix app
+- Payments: Razorpay (30-day free trial on Pro/Business)
+- Auth: JWT (access 15min + refresh 7d) + Google OAuth
+- Email: Nodemailer + Gmail SMTP (GMAIL_USER, GMAIL_APP_PASSWORD)
+- Infra: Docker + docker-compose (postgres, redis, backend)
+
+## STRICT BACKEND ARCHITECTURE (NEVER DEVIATE)
+```
+src/
+  routes/      → ONLY register route paths + attach controller methods
+  controllers/ → ONLY validate input (zod), try/catch, call service, return response
+  services/    → ONLY business logic (plan checks, rules, orchestration)
+  repos/       → ONLY Prisma calls (no business logic)
+  lib/         → prisma.ts, redis.ts, auth.ts, mailer.ts
+  plugins/     → fastify plugins
+```
+
+### Route file example:
+```ts
+// routes/auth.ts
+export async function authRoutes(app: FastifyInstance) {
+  app.post('/register', authController.register)
+  app.post('/login', authController.login)
+}
+```
+
+### Controller file example:
+```ts
+// controllers/auth.controller.ts
+export const register = async (req, reply) => {
+  try {
+    const data = registerSchema.parse(req.body)  // validate
+    const result = await authService.register(data)
+    return reply.code(201).send(result)
+  } catch (err) {
+    return handleError(reply, err)
+  }
+}
+```
+
+### Service file example:
+```ts
+// services/auth.service.ts
+export const register = async (data) => {
+  // business logic: check exists, hash password, create trial
+  const exists = await userRepo.findByEmail(data.email)
+  if (exists) throw new AppError('Email taken', 409)
+  ...
+}
+```
+
+### Repo file example:
+```ts
+// repos/user.repo.ts
+export const findByEmail = (email: string) =>
+  prisma.user.findUnique({ where: { email } })
+```
+
+## STRICT FRONTEND ARCHITECTURE (NEVER DEVIATE)
+```
+app/
+  (page)/
+    page.tsx      → UI ONLY (JSX, no logic)
+    utils.ts      → page-specific logic, formatters, helpers
+store/
+  slices/         → Redux slices (state + reducers)
+  api/            → RTK Query API slices (all API calls)
+components/       → shared UI components
+hooks/            → custom hooks
+```
+
+### Frontend rules:
+- page.tsx: ONLY JSX, imports from utils.ts and store
+- utils.ts: formatters, validators, derived data logic
+- ALL API calls via RTK Query (store/api/)
+- ALL state via Redux Toolkit (store/slices/)
+- NO useState for server data — use RTK Query
+- useState only for local UI state (modal open, form input)
+
+## Monorepo Structure
+```
+/
+├── apps/
+│   ├── backend/          # Fastify API (routes/controller/service/repo)
+│   ├── frontend/         # Next.js user app
+│   ├── admin/            # Next.js admin panel
+│   ├── chrome-ext/       # Chrome extension (React+Vite)
+│   ├── shopify-ext/      # Shopify app (Remix)
+│   ├── etsy-ext/         # Etsy browser extension (React+Vite)
+│   └── canva-ext/        # Canva app (React+Vite)
+├── packages/
+│   └── shared/           # Shared types, utils, constants
+├── docker-compose.yml
+├── .env.example
+└── package.json
+```
+
+## Backend API Routes
+- POST /auth/register, /auth/login, /auth/google, /auth/refresh, /auth/logout, GET /auth/me
+- POST /auth/verify-email, POST /auth/resend-verification, POST /auth/forgot-password, POST /auth/reset-password
+- GET/POST/PATCH/DELETE /links, GET /:slug (redirect)
+- GET /analytics/:linkId, GET /analytics/:linkId/clicks, GET /analytics/overview
+- POST /subscriptions/create-order, POST /subscriptions/verify, POST /subscriptions/webhook, GET /subscriptions/plans, POST /subscriptions/cancel
+- POST /qr/:linkId, GET /qr/:linkId
+- GET/POST/DELETE /utm-templates
+- GET/POST/DELETE /pixels
+- GET/POST/PATCH/DELETE /workspaces, POST/DELETE /workspaces/:id/members
+- GET/POST/DELETE /api-keys
+- GET/PATCH /bio, GET /bio/:slug (public)
+- GET /admin/users, GET /admin/stats, PATCH /admin/users/:id
+
+## Database Models (Prisma)
+User, Link, Click, UTMTemplate, Workspace, WorkspaceMember, Subscription, ApiKey, BioPage, Pixel
+
+## Redis Usage
+- link:{slug} → JSON (TTL 1hr) — redirect cache
+- rl:{ip} → rate limit counter
+- bl:{jti} → logout blacklist (TTL 15min)
+
+## Email (Nodemailer + Gmail)
+- GMAIL_USER=your@gmail.com
+- GMAIL_APP_PASSWORD=xxxx xxxx xxxx xxxx (16-char app password)
+- Templates: welcome, email-verify, password-reset
+
+## Key Business Rules
+- 30-day free trial on Pro/Business — no credit card at signup
+- Free plan: 50 links/mo hard limit, 30-day analytics retention
+- Pixels: Pro+ only | Smart redirects: Business only | Workspaces: Business only
+- API keys: Pro+ only
+
+## SEO Strategy
+- Target: "bitly alternative", "url shortener with analytics", "free link shortener", "custom url shortener", "link shortener for etsy sellers"
+- 10 MDX blog posts in frontend/content/blog/
+- Landing page: OG tags, JSON-LD, sitemap.xml, robots.txt
+
+## Build Status — COMPLETE
+- [x] .context + .questions
+- [x] Prisma schema (all models with resetToken, verifyToken, emailVerified)
+- [x] docker-compose (postgres, redis, backend)
+- [x] Backend: routes/controller/service/repo pattern
+- [x] Auth: register, login, google, refresh, logout, verify-email, forgot/reset password
+- [x] Links: CRUD + Redis cache + redirect + smart rules + pixel injection
+- [x] Analytics: click tracking, geo, device, referrer, daily chart
+- [x] Subscriptions: Razorpay, 30-day trial, webhook, cancel
+- [x] QR, UTM templates, pixels, workspaces, API keys, bio pages
+- [x] Admin: user management, plan/role editing, stats
+- [x] Frontend: Next.js 14, Redux Toolkit, RTK Query, Tailwind
+- [x] Landing page: full SEO, OG, JSON-LD, sitemap, robots.txt
+- [x] Dashboard: links, analytics, QR, UTM, pixels, bio, workspaces, API keys, settings
+- [x] Pricing: Razorpay subscription flow
+- [x] 10 SEO blog posts targeting high-intent keywords
+- [x] Auth pages: login, register, forgot-password, reset-password
+- [x] Chrome extension: popup + context menu (React+Vite+CRXJS)
+- [x] Shopify extension: Remix app
+- [x] Etsy extension: content script + platform tracking popup
+- [x] Canva extension: Canva SDK app
+- [x] Privacy Policy: GDPR + IT Act 2000 + SPDI Rules 2011 compliant (app/privacy/page.tsx)
+- [x] Terms of Use: Indian law, Razorpay, Google OAuth compliant (app/terms/page.tsx)
+- [x] Cookie Policy: essential-only, no ad cookies (app/cookies/page.tsx)
+- [x] Refund Policy: Razorpay + Consumer Protection Act 2019 (app/refund/page.tsx)
+- [x] Account Deletion: self-serve flow, soft delete, JWT blacklist (app/account-deletion/)
+- [x] Consent tracking: termsAcceptedAt/privacyAcceptedAt in DB, checkbox on register
+- [x] Data export: GET /auth/export-data (GDPR data portability)
+- [x] Footer: all 5 legal links on landing page
+- [x] Dashboard Settings: Data & Privacy + Danger Zone sections

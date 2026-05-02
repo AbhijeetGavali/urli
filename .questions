@@ -1,0 +1,71 @@
+# TinyURL SaaS — Open Questions
+
+## Answered / Assumed
+- [x] Payment gateway → Razorpay (India-first)
+- [x] Trial period → 30 days free, no credit card required
+- [x] Pricing → Free / $15 Pro / $49 Business
+- [x] Short domain → configurable via SHORT_DOMAIN env var (default: snip.ly placeholder)
+- [x] Auth → JWT + Google OAuth
+- [x] Stack → Fastify + Prisma + Postgres + Redis + Next.js + Redux Toolkit
+- [x] Compliance → Privacy Policy, Terms of Use, Cookie Policy, Refund Policy, Account Deletion — all implemented
+- [x] Consent → termsAcceptedAt/privacyAcceptedAt stored in DB; checkbox required at registration
+- [x] GDPR → data export (GET /auth/export-data), account deletion (DELETE /auth/delete-account), right to erasure
+- [x] Indian IT Act 2000 / SPDI Rules 2011 → Grievance Officer named, 30-day response SLA, consent recorded
+
+## Pending Clarifications (non-blocking, using best defaults)
+
+1. **Short domain**: What domain will you use for shortened links? (e.g., snp.to, lnk.to, your own)
+   - Default assumed: configurable via env, UI shows placeholder
+   - Answer: the domain on which app is hosted
+
+2. **Razorpay plans**: Are plans monthly-only or also annual (with discount)?
+   - Default assumed: monthly only, annual can be added later
+   - Answer: Monthly only
+
+3. **Google OAuth**: Do you have a Google Cloud project set up?
+   - Default assumed: env vars provided at deploy time
+   - creds in env 
+
+4. **Email provider**: For transactional emails (welcome, password reset)?
+   - Default assumed: Resend.com (simple API, generous free tier)
+   - Answer: nodemailer
+
+5. **Geo-IP provider**: For click analytics country/city detection?
+   - Default assumed: ip-api.com (free, no key needed for low volume) or MaxMind GeoLite2
+   - own detection logic if cheap and possible. else ip-api.com
+
+6. **Custom domain SSL**: How should custom domains be handled?
+   - Default assumed: User points CNAME to our server; SSL via Let's Encrypt / Caddy
+   - ssl by caddy, implementr CNAME and verification and detection.
+
+7. **Admin access**: How is admin role assigned?
+   - Default assumed: ADMIN role set directly in DB; no self-serve admin signup
+   - ADMIN role set directly in DB: create a seed / script for it
+
+8. **Canva extension**: Canva apps require approval from Canva. Is this for internal use or public listing?
+   - Default assumed: Development/internal use; manifest configured for Canva SDK
+   - Public listing provide step by step guide on how to submit and get approved
+
+9. **Shopify extension**: Shopify apps require a Partner account. Is this for a specific store or public listing?
+   - Default assumed: Development mode; can be submitted to Shopify App Store later
+   - Public listing provide step by step guide on how to submit and get approved
+
+10. **Blog content**: Should blogs be MDX files (static) or CMS-managed (editable via admin)?
+    - Default assumed: MDX files in frontend/content/blog/ for simplicity and SEO
+    - MDX, each blog has table of content, 8 - 13 min read, rich copywritting, correct supporting img, rich title, auther, date
+
+11. **Analytics retention**: Free plan 30 days — should old clicks be deleted or just hidden?
+    - Default assumed: Hidden (soft filter), not deleted, for potential upsell
+    - Do not delete anything
+
+12. **Rate limiting**: How many redirects per IP per minute?
+    - Default assumed: 60/min per IP on redirect endpoint
+    - 60/min per IP
+
+13. **Link slug format**: Auto-generated slug length?
+    - Default assumed: 6 chars alphanumeric (nanoid)
+    - 6 chars alphanumeric (nanoid)
+
+14. **White-label**: Should the platform support white-labeling (remove "Powered by" branding)?
+    - Default assumed: Business plan removes "Powered by" badge on bio pages
+    - Business plan removes "Powered by" badge on bio pages

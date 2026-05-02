@@ -1,0 +1,25 @@
+{
+  "name": "shopify-ext",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "shopify app dev",
+    "build": "remix build",
+    "start": "remix-serve build/index.js"
+  },
+  "dependencies": {
+    "@remix-run/node": "^2.9.2",
+    "@remix-run/react": "^2.9.2",
+    "@remix-run/serve": "^2.9.2",
+    "@shopify/app-bridge-react": "^4.1.6",
+    "@shopify/polaris": "^13.3.0",
+    "@shopify/shopify-app-remix": "^3.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^2.9.2",
+    "@shopify/cli": "^3.63.2",
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,0 +1,207 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role { USER ADMIN }
+enum Plan { FREE PRO BUSINESS }
+enum SubStatus { TRIALING ACTIVE CANCELLED EXPIRED }
+enum WorkspaceRole { OWNER ADMIN EDITOR VIEWER }
+enum PixelType { FACEBOOK GOOGLE }
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  name              String
+  avatar            String?
+  googleId          String?   @unique
+  passwordHash      String?
+  role              Role      @default(USER)
+  plan              Plan      @default(FREE)
+  trialEndsAt       DateTime?
+  emailVerified     Boolean   @default(false)
+  verifyToken       String?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  termsAcceptedAt   DateTime?
+  privacyAcceptedAt DateTime?
+  deletedAt         DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  links             Link[]
+  clicks            Click[]
+  utmTemplates      UTMTemplate[]
+  workspaces        WorkspaceMember[]
+  ownedWorkspaces   Workspace[]
+  subscription      Subscription?
+  apiKeys           ApiKey[]
+  bioPage           BioPage?
+  pixels            Pixel[]
+  customDomains     CustomDomain[]
+}
+
+model Link {
+  id           String    @id @default(cuid())
+  slug         String    @unique
+  originalUrl  String
+  title        String?
+  userId       String
+  workspaceId  String?
+  expiresAt    DateTime?
+  maxClicks    Int?
+  clickCount   Int       @default(0)
+  isActive     Boolean   @default(true)
+  utmSource    String?
+  utmMedium    String?
+  utmCampaign  String?
+  utmTerm      String?
+  utmContent   String?
+  pixelIds     String[]  @default([])
+  smartRules   Json?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace    Workspace? @relation(fields: [workspaceId], references: [id])
+  clicks       Click[]
+
+  @@index([slug])
+  @@index([userId])
+}
+
+model Click {
+  id        String   @id @default(cuid())
+  linkId    String
+  userId    String?
+  ip        String?
+  country   String?
+  city      String?
+  device    String?
+  browser   String?
+  os        String?
+  referrer  String?
+  createdAt DateTime @default(now())
+
+  link      Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([linkId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model UTMTemplate {
+  id          String   @id @default(cuid())
+  userId      String
+  workspaceId String?
+  name        String
+  source      String?
+  medium      String?
+  campaign    String?
+  term        String?
+  content     String?
+  createdAt   DateTime @default(now())
+
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id])
+}
+
+model Workspace {
+  id           String   @id @default(cuid())
+  name         String
+  ownerId      String
+  createdAt    DateTime @default(now())
+
+  owner        User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  members      WorkspaceMember[]
+  links        Link[]
+  utmTemplates UTMTemplate[]
+}
+
+model WorkspaceMember {
+  workspaceId String
+  userId      String
+  role        WorkspaceRole @default(VIEWER)
+  joinedAt    DateTime      @default(now())
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([workspaceId, userId])
+}
+
+model Subscription {
+  id               String    @id @default(cuid())
+  userId           String    @unique
+  razorpaySubId    String?   @unique
+  razorpayOrderId  String?
+  plan             Plan
+  status           SubStatus @default(TRIALING)
+  trialEndsAt      DateTime?
+  currentPeriodEnd DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  userId      String
+  workspaceId String?
+  name        String
+  key         String    @unique
+  lastUsedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([key])
+}
+
+model BioPage {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  slug        String   @unique
+  title       String
+  description String?
+  avatar      String?
+  links       Json     @default("[]")
+  theme       String   @default("default")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([slug])
+}
+
+model Pixel {
+  id        String    @id @default(cuid())
+  userId    String
+  name      String
+  type      PixelType
+  pixelId   String
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CustomDomain {
+  id         String   @id @default(cuid())
+  userId     String
+  domain     String   @unique
+  verified   Boolean  @default(false)
+  verifyToken String  @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([domain])
+}

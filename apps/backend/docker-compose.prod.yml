@@ -1,0 +1,87 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: urli_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: urli_db
+    volumes:
+      - urli_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U urli -d urli_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    mem_limit: 512m
+    networks:
+      - urli_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: urli_redis
+    restart: unless-stopped
+    volumes:
+      - urli_redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    mem_limit: 128m
+    networks:
+      - urli_net
+
+  backend:
+    image: ghcr.io/${IMAGE_NAME}:latest
+    container_name: urli_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/urli_db
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+      PORT: 4000
+
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+
+      GMAIL_USER: ${GMAIL_USER}
+      GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
+      GMAIL_FROM: ${GMAIL_FROM}
+
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET}
+      RAZORPAY_WEBHOOK_SECRET: ${RAZORPAY_WEBHOOK_SECRET}
+      RAZORPAY_PRO_PLAN_ID: ${RAZORPAY_PRO_PLAN_ID}
+      RAZORPAY_BUSINESS_PLAN_ID: ${RAZORPAY_BUSINESS_PLAN_ID}
+
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+
+      SHORT_DOMAIN: urli.ideasprout.in
+      FRONTEND_URL: https://urli.ideasprout.in
+      ADMIN_URL: https://admin.urli.ideasprout.in
+    mem_limit: 512m
+    networks:
+      - urli_net
+
+volumes:
+  urli_postgres_data:
+  urli_redis_data:
+
+networks:
+  urli_net:
+    driver: bridge

@@ -1,0 +1,81 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/backend/**"
+      - ".github/workflows/deploy-backend.yml"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/urli-backend
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GHCR_PAT }}" | docker login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/backend
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Upload docker-compose to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ubuntu
+          key: ${{ secrets.SSH_KEY }}
+          source: "apps/backend/docker-compose.prod.yml"
+          target: "~/urli"
+          strip_components: 2
+
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_IP }}
+          username: ubuntu
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            set -e
+            cd ~/urli
+
+            # Write .env for docker-compose variable substitution
+            cat > .env <<EOF
+            IMAGE_NAME=${{ env.IMAGE_NAME }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
+            GMAIL_USER=${{ secrets.GMAIL_USER }}
+            GMAIL_APP_PASSWORD=${{ secrets.GMAIL_APP_PASSWORD }}
+            GMAIL_FROM=${{ secrets.GMAIL_FROM }}
+            RAZORPAY_KEY_ID=${{ secrets.RAZORPAY_KEY_ID }}
+            RAZORPAY_KEY_SECRET=${{ secrets.RAZORPAY_KEY_SECRET }}
+            RAZORPAY_WEBHOOK_SECRET=${{ secrets.RAZORPAY_WEBHOOK_SECRET }}
+            RAZORPAY_PRO_PLAN_ID=${{ secrets.RAZORPAY_PRO_PLAN_ID }}
+            RAZORPAY_BUSINESS_PLAN_ID=${{ secrets.RAZORPAY_BUSINESS_PLAN_ID }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            EOF
+
+            # Pull latest image
+            echo "${{ secrets.GHCR_PAT }}" | docker login ${{ env.REGISTRY }} --username ${{ github.actor }} --password-stdin
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+            # Deploy (postgres/redis are preserved; only backend recreated)
+            docker compose -f docker-compose.prod.yml up -d --force-recreate --no-deps backend
+
+            # Clean up old images
+            docker image prune -f
