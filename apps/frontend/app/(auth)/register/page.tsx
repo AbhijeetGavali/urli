@@ -5,6 +5,14 @@ import { useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 import { useRegisterMutation } from '@/store/api/authApi'
 import { handleAuthSuccess, handleAuthError } from '../utils'
+import { Zap, Check } from 'lucide-react'
+
+const PERKS = [
+  '30-day Pro trial — no credit card',
+  'Unlimited links after trial at ₹999/mo',
+  'Deep analytics, pixels, QR codes',
+  'Founder\'s pricing locked in forever',
+]
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -16,7 +24,7 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!termsAccepted) { setError('You must accept the Terms of Use and Privacy Policy.'); return }
+    if (!termsAccepted) { setError('Please accept the Terms of Use and Privacy Policy.'); return }
     setError('')
     try {
       const data = await register({ ...form, termsAccepted: true }).unwrap()
@@ -28,22 +36,55 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold text-white">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-xl" />
-            Urli
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Left panel */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#0a0f1e] flex-col justify-between p-12 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_0%_0%,rgba(59,130,246,0.15),transparent)]" />
+        <div className="relative">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <Zap size={16} className="text-white" fill="white" />
+            </div>
+            <span className="text-white font-bold text-lg">Urli</span>
           </Link>
-          <p className="text-blue-200/70 mt-2 text-sm">30-day Pro trial — no credit card needed</p>
         </div>
+        <div className="relative space-y-4">
+          <h2 className="text-white text-2xl font-bold">Everything you need to track links that convert</h2>
+          <ul className="space-y-3">
+            {PERKS.map(p => (
+              <li key={p} className="flex items-center gap-3 text-gray-300 text-sm">
+                <div className="w-5 h-5 bg-blue-600/20 border border-blue-500/30 rounded-full flex items-center justify-center shrink-0">
+                  <Check size={11} className="text-blue-400" strokeWidth={2.5} />
+                </div>
+                {p}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="relative text-xs text-gray-600">
+          A product of <a href="https://ideasprout.in" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition-colors">IdeaSprout</a>
+        </div>
+      </div>
 
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 shadow-2xl">
+      {/* Right panel */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm">
+          <div className="lg:hidden flex items-center gap-2 mb-8">
+            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+              <Zap size={14} className="text-white" fill="white" />
+            </div>
+            <span className="font-bold text-gray-900">Urli</span>
+          </div>
+
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Create your account</h1>
+          <p className="text-gray-500 text-sm mb-8">30-day Pro trial · No credit card needed</p>
+
           {error && (
-            <div className="bg-red-500/20 border border-red-400/30 text-red-200 text-sm p-3 rounded-xl mb-5">
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm p-3 rounded-xl mb-5">
               {error}
             </div>
           )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {[
               { key: 'name', label: 'Full name', type: 'text', placeholder: 'Jane Smith' },
@@ -51,33 +92,34 @@ export default function RegisterPage() {
               { key: 'password', label: 'Password', type: 'password', placeholder: '8+ characters' },
             ].map(({ key, label, type, placeholder }) => (
               <div key={key}>
-                <label className="block text-sm font-medium text-blue-100 mb-1.5">{label}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
                 <input type={type} required value={(form as any)[key]}
                   onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-blue-300/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-                  placeholder={placeholder} />
+                  className="input" placeholder={placeholder}
+                  minLength={key === 'password' ? 8 : undefined} />
               </div>
             ))}
 
             <label className="flex items-start gap-3 cursor-pointer pt-1">
               <input type="checkbox" checked={termsAccepted} onChange={e => setTermsAccepted(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded border-white/30 bg-white/10 text-blue-500 focus:ring-blue-400 shrink-0" />
-              <span className="text-xs text-blue-200/80 leading-relaxed">
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 shrink-0" />
+              <span className="text-xs text-gray-500 leading-relaxed">
                 I agree to the{' '}
-                <Link href="/terms" target="_blank" className="text-white hover:underline font-medium">Terms of Use</Link>
+                <Link href="/terms" target="_blank" className="text-blue-600 hover:underline">Terms of Use</Link>
                 {' '}and{' '}
-                <Link href="/privacy" target="_blank" className="text-white hover:underline font-medium">Privacy Policy</Link>
+                <Link href="/privacy" target="_blank" className="text-blue-600 hover:underline">Privacy Policy</Link>
               </span>
             </label>
 
             <button type="submit" disabled={isLoading || !termsAccepted}
-              className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white py-2.5 rounded-xl font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg">
-              {isLoading ? 'Creating account…' : 'Create account'}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-semibold text-sm transition-colors disabled:opacity-50 shadow-sm shadow-blue-200">
+              {isLoading ? 'Creating account…' : 'Start free trial'}
             </button>
           </form>
-          <p className="text-center text-sm text-blue-200/70 mt-6">
+
+          <p className="text-center text-sm text-gray-500 mt-6">
             Already have an account?{' '}
-            <Link href="/login" className="text-white font-medium hover:underline">Sign in</Link>
+            <Link href="/login" className="text-blue-600 font-medium hover:text-blue-700 transition-colors">Sign in</Link>
           </p>
         </div>
       </div>

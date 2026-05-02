@@ -10,7 +10,7 @@ export const FEATURES = [
 ]
 
 export const TESTIMONIALS = [
-  { name: 'Maria K.', role: 'Etsy Shop Owner', avatar: 'MK', text: 'Finally a tool that fits between Bitly free and their $199 plan. I track every Pinterest pin for $15/mo.' },
+  { name: 'Maria K.', role: 'Etsy Shop Owner', avatar: 'MK', text: 'Finally a tool that fits between Bitly free and their $199 plan. I track every Pinterest pin for ₹999/mo.' },
   { name: 'James T.', role: 'Newsletter Creator', avatar: 'JT', text: 'Switched from Bitly after they started showing ads on my links. Urli is cleaner and cheaper.' },
   { name: 'Priya S.', role: 'Digital Marketer', avatar: 'PS', text: 'The link expiry feature alone saved a client relationship. Flash sale links now auto-expire.' },
 ]
@@ -38,7 +38,7 @@ export const jsonLd = {
   '@type': 'SoftwareApplication',
   name: 'Urli',
   applicationCategory: 'BusinessApplication',
-  offers: { '@type': 'Offer', price: '15', priceCurrency: 'USD' },
+  offers: { '@type': 'Offer', price: '999', priceCurrency: 'INR' },
   description: 'Smart URL shortener with analytics, retargeting pixels, UTM templates, and link-in-bio.',
   url: process.env.NEXT_PUBLIC_APP_URL || 'https://urli.app',
 }

@@ -13,7 +13,7 @@ export default function CookiePolicyPage() {
   return (
     <div className="min-h-screen bg-white">
       <nav className="sticky top-0 z-10 border-b border-gray-100 bg-white/95 backdrop-blur-sm px-4 h-14 flex items-center justify-between max-w-4xl mx-auto">
-        <Link href="/" className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Urli</Link>
+        <Link href="/" className="text-lg font-bold text-gray-900">Urli</Link>
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <Link href="/privacy" className="hover:text-gray-900">Privacy</Link>
           <Link href="/terms" className="hover:text-gray-900">Terms</Link>
@@ -105,7 +105,7 @@ export default function CookiePolicyPage() {
 
         <section className="mb-10">
           <h2 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">Contact</h2>
-          <p className="text-gray-600">For questions about this Cookie Policy, email <a href="mailto:privacy@urli.app" className="text-blue-600 hover:underline">privacy@urli.app</a>.</p>
+          <p className="text-gray-600">For questions about this Cookie Policy, email <a href="mailto:support@ideasprout.in" className="text-blue-600 hover:underline">support@ideasprout.in</a>.</p>
         </section>
       </div>
 
@@ -115,7 +115,7 @@ export default function CookiePolicyPage() {
             <Link key={href} href={href} className="hover:text-gray-700">{label}</Link>
           ))}
         </div>
-        © {new Date().getFullYear()} Urli. All rights reserved.
+        © {new Date().getFullYear()} IdeaSprout Technologies. Urli is a product of IdeaSprout. All rights reserved.
       </footer>
     </div>
   )

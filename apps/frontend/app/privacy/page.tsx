@@ -38,7 +38,7 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-white">
       <nav className="sticky top-0 z-10 border-b border-gray-100 bg-white/95 backdrop-blur-sm px-4 h-14 flex items-center justify-between max-w-6xl mx-auto">
-        <Link href="/" className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Urli</Link>
+        <Link href="/" className="text-lg font-bold text-gray-900">Urli</Link>
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <Link href="/terms" className="hover:text-gray-900">Terms</Link>
           <Link href="/cookies" className="hover:text-gray-900">Cookies</Link>
@@ -72,9 +72,9 @@ export default function PrivacyPage() {
           </div>
 
           <Section id="who-we-are" title="1. Who We Are (Data Controller)">
-            <p>Urli ("we", "us", "our") is a URL shortening and link management SaaS platform operated at <strong>urli.app</strong>.</p>
-            <p>For the purposes of GDPR and Indian data protection law, Urli is the <strong>data controller</strong> responsible for your personal data.</p>
-            <p><strong>Contact:</strong> privacy@urli.app</p>
+            <p>Urli ("we", "us", "our") is a URL shortening and link management SaaS platform, a product of <strong>IdeaSprout Technologies</strong> (<a href="https://ideasprout.in" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">ideasprout.in</a>).</p>
+            <p>For the purposes of GDPR and Indian data protection law, IdeaSprout Technologies is the <strong>data controller</strong> responsible for your personal data.</p>
+            <p><strong>Contact:</strong> <a href="mailto:support@ideasprout.in" className="text-blue-600 hover:underline">support@ideasprout.in</a></p>
           </Section>
 
           <Section id="data-we-collect" title="2. Data We Collect">
@@ -155,15 +155,15 @@ export default function PrivacyPage() {
           <Section id="your-rights" title="8. Your Rights">
             <p>Under GDPR and the SPDI Rules, you have the following rights:</p>
             <ul className="list-disc pl-5 space-y-2">
-              <li><strong>Right of access</strong>: Request a copy of all personal data we hold about you. Use the "Export my data" feature in Dashboard → Settings, or email privacy@urli.app.</li>
+              <li><strong>Right of access</strong>: Request a copy of all personal data we hold about you. Use the "Export my data" feature in Dashboard → Settings, or email support@ideasprout.in.</li>
               <li><strong>Right to rectification</strong>: Correct inaccurate data via Dashboard → Settings.</li>
-              <li><strong>Right to erasure ("right to be forgotten")</strong>: Delete your account and personal data via Dashboard → Settings → Delete Account, or email privacy@urli.app. We will process deletion within 30 days.</li>
+              <li><strong>Right to erasure ("right to be forgotten")</strong>: Delete your account and personal data via Dashboard → Settings → Delete Account, or email support@ideasprout.in. We will process deletion within 30 days.</li>
               <li><strong>Right to data portability</strong>: Download your data in JSON format via Dashboard → Settings → Export Data.</li>
               <li><strong>Right to withdraw consent</strong>: You may withdraw consent at any time by deleting your account. Withdrawal does not affect the lawfulness of processing before withdrawal.</li>
-              <li><strong>Right to object</strong>: Object to processing based on legitimate interests by emailing privacy@urli.app.</li>
+              <li><strong>Right to object</strong>: Object to processing based on legitimate interests by emailing support@ideasprout.in.</li>
               <li><strong>Right to lodge a complaint</strong>: If you are in the EEA, you may lodge a complaint with your local data protection authority. In India, you may contact the IT Secretary under the IT Act.</li>
             </ul>
-            <p className="mt-3">To exercise any right, email <a href="mailto:privacy@urli.app" className="text-blue-600 hover:underline">privacy@urli.app</a>. We will respond within <strong>30 days</strong> (GDPR) or <strong>30 days</strong> (SPDI Rules).</p>
+            <p className="mt-3">To exercise any right, email <a href="mailto:support@ideasprout.in" className="text-blue-600 hover:underline">support@ideasprout.in</a>. We will respond within <strong>30 days</strong> (GDPR) or <strong>30 days</strong> (SPDI Rules).</p>
           </Section>
 
           <Section id="international" title="9. International Data Transfers">
@@ -172,7 +172,7 @@ export default function PrivacyPage() {
           </Section>
 
           <Section id="children" title="10. Children's Privacy">
-            <p>Urli is not directed at children under 13 years of age. We do not knowingly collect personal data from children under 13. If you believe a child has provided us with personal data, contact privacy@urli.app and we will delete it promptly.</p>
+            <p>Urli is not directed at children under 13 years of age. We do not knowingly collect personal data from children under 13. If you believe a child has provided us with personal data, contact support@ideasprout.in and we will delete it promptly.</p>
           </Section>
 
           <Section id="security" title="11. Security">
@@ -195,8 +195,8 @@ export default function PrivacyPage() {
           <Section id="contact" title="13. Contact & Grievance Officer">
             <p>For privacy questions, data requests, or complaints:</p>
             <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100 text-sm space-y-1">
-              <p><strong>Email:</strong> <a href="mailto:privacy@urli.app" className="text-blue-600 hover:underline">privacy@urli.app</a></p>
-              <p><strong>Grievance Officer (India — IT Act 2000, Rule 5(9)):</strong> privacy@urli.app</p>
+              <p><strong>Email:</strong> <a href="mailto:support@ideasprout.in" className="text-blue-600 hover:underline">support@ideasprout.in</a></p>
+              <p><strong>Grievance Officer (India — IT Act 2000, Rule 5(9)):</strong> support@ideasprout.in</p>
               <p><strong>Response time:</strong> Within 30 days of receipt</p>
             </div>
           </Section>
@@ -209,7 +209,7 @@ export default function PrivacyPage() {
             <Link key={href} href={href} className="hover:text-gray-700">{label}</Link>
           ))}
         </div>
-        © {new Date().getFullYear()} Urli. All rights reserved.
+        © {new Date().getFullYear()} IdeaSprout Technologies. Urli is a product of IdeaSprout. All rights reserved.
       </footer>
     </div>
   )

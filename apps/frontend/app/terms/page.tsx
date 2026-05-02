@@ -40,7 +40,7 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-white">
       <nav className="sticky top-0 z-10 border-b border-gray-100 bg-white/95 backdrop-blur-sm px-4 h-14 flex items-center justify-between max-w-6xl mx-auto">
-        <Link href="/" className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Urli</Link>
+        <Link href="/" className="text-lg font-bold text-gray-900">Urli</Link>
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <Link href="/privacy" className="hover:text-gray-900">Privacy</Link>
           <Link href="/cookies" className="hover:text-gray-900">Cookies</Link>
@@ -72,7 +72,7 @@ export default function TermsPage() {
           </div>
 
           <Section id="acceptance" title="1. Acceptance of Terms">
-            <p>These Terms of Use ("Terms") constitute a legally binding agreement between you ("User", "you") and Urli ("we", "us", "our"), the operator of urli.app.</p>
+            <p>These Terms of Use ("Terms") constitute a legally binding agreement between you ("User", "you") and <strong>IdeaSprout Technologies</strong>, the operator of Urli ("we", "us", "our") at <a href="https://ideasprout.in" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">ideasprout.in</a>.</p>
             <p>By registering for an account, clicking "Create account", or otherwise using the Urli service, you confirm that you have read, understood, and agree to these Terms and our <Link href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>.</p>
             <p>You must be at least 13 years old to use Urli. By using the service, you represent that you meet this requirement.</p>
           </Section>
@@ -96,7 +96,7 @@ export default function TermsPage() {
 
           <Section id="accounts" title="3. Accounts & Registration">
             <p>You must provide accurate, current, and complete information when registering. You are responsible for maintaining the confidentiality of your account credentials and for all activity under your account.</p>
-            <p>You must notify us immediately at privacy@urli.app if you suspect unauthorised access to your account.</p>
+            <p>You must notify us immediately at support@ideasprout.in if you suspect unauthorised access to your account.</p>
             <p>One person or legal entity may not maintain more than one free account. Multiple accounts to circumvent plan limits are prohibited.</p>
           </Section>
 
@@ -152,7 +152,7 @@ export default function TermsPage() {
           </Section>
 
           <Section id="termination" title="9. Termination">
-            <p><strong>By you:</strong> You may delete your account at any time via Dashboard → Settings → Delete Account or by emailing privacy@urli.app. Deletion is subject to our <Link href="/account-deletion" className="text-blue-600 hover:underline">Account Deletion Policy</Link>.</p>
+            <p><strong>By you:</strong> You may delete your account at any time via Dashboard → Settings → Delete Account or by emailing support@ideasprout.in. Deletion is subject to our <Link href="/account-deletion" className="text-blue-600 hover:underline">Account Deletion Policy</Link>.</p>
             <p><strong>By us:</strong> We may suspend or terminate your account immediately if you violate these Terms, engage in fraudulent activity, or if required by law. We will provide notice where reasonably practicable.</p>
             <p>Upon termination, your right to use the service ceases immediately. Provisions that by their nature should survive termination (IP, disclaimers, liability, governing law) will survive.</p>
           </Section>
@@ -184,8 +184,8 @@ export default function TermsPage() {
 
           <Section id="contact" title="15. Contact">
             <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 text-sm space-y-1">
-              <p><strong>Email:</strong> <a href="mailto:privacy@urli.app" className="text-blue-600 hover:underline">privacy@urli.app</a></p>
-              <p><strong>Grievance Officer (IT Act 2000):</strong> privacy@urli.app</p>
+              <p><strong>Email:</strong> <a href="mailto:support@ideasprout.in" className="text-blue-600 hover:underline">support@ideasprout.in</a></p>
+              <p><strong>Grievance Officer (IT Act 2000):</strong> support@ideasprout.in</p>
               <p><strong>Response time:</strong> Within 30 days</p>
             </div>
           </Section>
@@ -198,7 +198,7 @@ export default function TermsPage() {
             <Link key={href} href={href} className="hover:text-gray-700">{label}</Link>
           ))}
         </div>
-        © {new Date().getFullYear()} Urli. All rights reserved.
+        © {new Date().getFullYear()} IdeaSprout Technologies. Urli is a product of IdeaSprout. All rights reserved.
       </footer>
     </div>
   )

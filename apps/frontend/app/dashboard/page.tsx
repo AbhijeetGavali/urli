@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useGetLinksQuery, useDeleteLinkMutation } from '../../store/api/linksApi'
 import { useGetOverviewQuery } from '../../store/api/miscApi'
 import { showToast } from '../../store/slices/uiSlice'
@@ -8,10 +8,12 @@ import { formatDate, shortUrl, copyToClipboard, getLinkStatus, STATUS_COLORS } f
 import { CreateLinkModal } from '../../components/CreateLinkModal'
 import { EditLinkModal } from '../../components/EditLinkModal'
 import Link from 'next/link'
-import { Link2, MousePointerClick, TrendingUp, Plus } from 'lucide-react'
+import { Link2, MousePointerClick, TrendingUp, Plus, Zap } from 'lucide-react'
+import type { RootState } from '../../store'
 
 export default function DashboardPage() {
   const dispatch = useDispatch()
+  const user = useSelector((s: RootState) => s.auth.user)
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [showCreate, setShowCreate] = useState(false)
@@ -34,6 +36,23 @@ export default function DashboardPage() {
 
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto">
+      {/* Upgrade nudge for free users */}
+      {user?.plan === 'FREE' && (
+        <div className="mb-5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center shrink-0">
+              <Zap size={16} className="text-white" fill="white" />
+            </div>
+            <div>
+              <div className="text-white font-semibold text-sm">Unlock unlimited links & deep analytics</div>
+              <div className="text-blue-100 text-xs mt-0.5">Founder's pricing — ₹999/mo locked in forever</div>
+            </div>
+          </div>
+          <Link href="/pricing" className="shrink-0 bg-white text-blue-700 text-xs font-bold px-4 py-2 rounded-xl hover:bg-blue-50 transition-colors whitespace-nowrap">
+            Upgrade now →
+          </Link>
+        </div>
+      )}
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 md:gap-4 mb-6">
         {[

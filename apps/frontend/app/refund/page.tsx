@@ -13,7 +13,7 @@ export default function RefundPolicyPage() {
   return (
     <div className="min-h-screen bg-white">
       <nav className="sticky top-0 z-10 border-b border-gray-100 bg-white/95 backdrop-blur-sm px-4 h-14 flex items-center justify-between max-w-4xl mx-auto">
-        <Link href="/" className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Urli</Link>
+        <Link href="/" className="text-lg font-bold text-gray-900">Urli</Link>
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <Link href="/terms" className="hover:text-gray-900">Terms</Link>
           <Link href="/privacy" className="hover:text-gray-900">Privacy</Link>
@@ -81,7 +81,7 @@ export default function RefundPolicyPage() {
         <section className="mb-10">
           <h2 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">4. How to Request a Refund</h2>
           <div className="space-y-3 text-gray-600 leading-relaxed">
-            <p>To request a refund, email <a href="mailto:privacy@urli.app" className="text-blue-600 hover:underline">privacy@urli.app</a> with:</p>
+            <p>To request a refund, email <a href="mailto:support@ideasprout.in" className="text-blue-600 hover:underline">support@ideasprout.in</a> with:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li>Your registered email address</li>
               <li>Razorpay payment ID (found in your email receipt)</li>
@@ -109,7 +109,7 @@ export default function RefundPolicyPage() {
         <section className="mb-10">
           <h2 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">7. Contact</h2>
           <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 text-sm space-y-1">
-            <p><strong>Email:</strong> <a href="mailto:privacy@urli.app" className="text-blue-600 hover:underline">privacy@urli.app</a></p>
+            <p><strong>Email:</strong> <a href="mailto:support@ideasprout.in" className="text-blue-600 hover:underline">support@ideasprout.in</a></p>
             <p><strong>Response time:</strong> Within 5 business days</p>
             <p><strong>Refund processing:</strong> 7–10 business days after approval</p>
           </div>
@@ -122,7 +122,7 @@ export default function RefundPolicyPage() {
             <Link key={href} href={href} className="hover:text-gray-700">{label}</Link>
           ))}
         </div>
-        © {new Date().getFullYear()} Urli. All rights reserved.
+        © {new Date().getFullYear()} IdeaSprout Technologies. Urli is a product of IdeaSprout. All rights reserved.
       </footer>
     </div>
   )

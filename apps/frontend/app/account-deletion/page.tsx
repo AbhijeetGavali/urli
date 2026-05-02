@@ -12,7 +12,7 @@ export default function AccountDeletionPage() {
   return (
     <div className="min-h-screen bg-white">
       <nav className="sticky top-0 z-10 border-b border-gray-100 bg-white/95 backdrop-blur-sm px-4 h-14 flex items-center justify-between max-w-4xl mx-auto">
-        <Link href="/" className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Urli</Link>
+        <Link href="/" className="text-lg font-bold text-gray-900">Urli</Link>
         <Link href="/privacy" className="text-sm text-gray-500 hover:text-gray-900">Privacy Policy</Link>
       </nav>
 
@@ -62,14 +62,14 @@ export default function AccountDeletionPage() {
           <ul className="text-blue-800 space-y-1">
             <li>• <strong>Downgrade to Free</strong> — keep your account and links at no cost</li>
             <li>• <strong>Export your data</strong> — download all your data before deleting (Dashboard → Settings → Export Data)</li>
-            <li>• <strong>Contact support</strong> — email privacy@urli.app if you have a specific issue we can resolve</li>
+            <li>• <strong>Contact support</strong> — email support@ideasprout.in if you have a specific issue we can resolve</li>
           </ul>
         </div>
 
         <AccountDeletionClient />
 
         <p className="text-center text-xs text-gray-400 mt-8">
-          Questions? Email <a href="mailto:privacy@urli.app" className="text-blue-600 hover:underline">privacy@urli.app</a>
+          Questions? Email <a href="mailto:support@ideasprout.in" className="text-blue-600 hover:underline">support@ideasprout.in</a>
           {' '}· <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
           {' '}· <Link href="/terms" className="hover:underline">Terms of Use</Link>
         </p>

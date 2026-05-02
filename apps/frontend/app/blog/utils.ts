@@ -8,6 +8,7 @@ export interface Post {
   keywords: string[]
   author: { name: string; role: string; avatar: string }
   toc: { id: string; title: string }[]
+  coverImage: string
 }
 
 const AUTHOR = { name: 'Arjun Mehta', role: 'Head of Growth, Urli', avatar: 'AM' }
@@ -20,6 +21,7 @@ export const POSTS: Post[] = [
     date: 'May 2, 2025', readTime: '10 min read', category: 'Comparisons',
     keywords: ['bitly alternative', 'bitly alternative free', 'free url shortener no ads'],
     author: AUTHOR,
+    coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80&auto=format&fit=crop',
     toc: [
       { id: 'why-leaving', title: 'Why people are leaving Bitly' },
       { id: 'alternatives', title: 'Best alternatives in 2025' },
@@ -35,6 +37,7 @@ export const POSTS: Post[] = [
     date: 'May 1, 2025', readTime: '12 min read', category: 'Guides',
     keywords: ['url shortener with analytics', 'link analytics', 'click tracking url shortener'],
     author: AUTHOR,
+    coverImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80&auto=format&fit=crop',
     toc: [
       { id: 'why-basic-counts', title: 'Why basic click counts aren\'t enough' },
       { id: 'what-good-looks-like', title: 'What good analytics looks like' },
@@ -49,6 +52,7 @@ export const POSTS: Post[] = [
     date: 'Apr 30, 2025', readTime: '9 min read', category: 'Etsy',
     keywords: ['link shortener for etsy sellers', 'etsy traffic tracking', 'etsy analytics'],
     author: AUTHOR,
+    coverImage: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&q=80&auto=format&fit=crop',
     toc: [
       { id: 'problem', title: 'The Etsy seller\'s traffic problem' },
       { id: 'solution', title: 'The URL shortener solution' },
@@ -64,6 +68,7 @@ export const POSTS: Post[] = [
     date: 'Apr 28, 2025', readTime: '8 min read', category: 'Guides',
     keywords: ['custom url shortener', 'branded short links', 'custom domain url shortener'],
     author: AUTHOR,
+    coverImage: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=1200&q=80&auto=format&fit=crop',
     toc: [
       { id: 'problem', title: 'Why generic links hurt your brand' },
       { id: 'benefits', title: 'What a custom shortener gives you' },
@@ -78,6 +83,7 @@ export const POSTS: Post[] = [
     date: 'Apr 26, 2025', readTime: '11 min read', category: 'Marketing',
     keywords: ['retargeting pixels url shortener', 'facebook pixel short link', 'url shortener retargeting'],
     author: AUTHOR,
+    coverImage: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=1200&q=80&auto=format&fit=crop',
     toc: [
       { id: 'problem', title: 'The retargeting problem' },
       { id: 'how-it-works', title: 'How pixel injection works' },
@@ -93,6 +99,7 @@ export const POSTS: Post[] = [
     date: 'Apr 24, 2025', readTime: '13 min read', category: 'Marketing',
     keywords: ['utm parameters', 'utm builder', 'utm template', 'ga4 utm tracking'],
     author: AUTHOR,
+    coverImage: 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=1200&q=80&auto=format&fit=crop',
     toc: [
       { id: 'what-are-utm', title: 'What are UTM parameters?' },
       { id: 'chaos-problem', title: 'The UTM chaos problem' },
@@ -108,6 +115,7 @@ export const POSTS: Post[] = [
     date: 'Apr 22, 2025', readTime: '8 min read', category: 'Features',
     keywords: ['link expiration', 'expiring url', 'time limited link', 'url shortener expiry'],
     author: AUTHOR,
+    coverImage: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=1200&q=80&auto=format&fit=crop',
     toc: [
       { id: 'why-matters', title: 'Why link expiration matters' },
       { id: 'use-cases', title: '7 use cases' },
@@ -122,6 +130,7 @@ export const POSTS: Post[] = [
     date: 'Apr 20, 2025', readTime: '8 min read', category: 'Comparisons',
     keywords: ['linktree alternative', 'link in bio page', 'free linktree alternative'],
     author: AUTHOR,
+    coverImage: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=1200&q=80&auto=format&fit=crop',
     toc: [
       { id: 'linktree-problem', title: 'The Linktree pricing problem' },
       { id: 'what-you-need', title: 'What a bio page needs' },
@@ -136,6 +145,7 @@ export const POSTS: Post[] = [
     date: 'Apr 18, 2025', readTime: '9 min read', category: 'Features',
     keywords: ['dynamic qr code', 'qr code generator', 'editable qr code'],
     author: AUTHOR,
+    coverImage: 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=1200&q=80&auto=format&fit=crop',
     toc: [
       { id: 'static-vs-dynamic', title: 'Static vs dynamic QR codes' },
       { id: 'when-saves-money', title: 'When dynamic QR codes save money' },
@@ -150,6 +160,7 @@ export const POSTS: Post[] = [
     date: 'Apr 16, 2025', readTime: '10 min read', category: 'Guides',
     keywords: ['url shortener for newsletters', 'newsletter link tracking', 'email link shortener'],
     author: AUTHOR,
+    coverImage: 'https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=1200&q=80&auto=format&fit=crop',
     toc: [
       { id: 'why-trackable', title: 'Why newsletter creators need trackable links' },
       { id: 'what-you-need', title: 'What to look for' },
