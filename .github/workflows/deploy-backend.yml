@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/urli-backend
+  IMAGE_NAME: abhijeetgavali/urli-backend
 
 jobs:
   build-and-deploy:
