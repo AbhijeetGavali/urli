@@ -1,107 +1,495 @@
-
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font-sans); }
-  :root { --blue-50: #E6F1FB; --blue-100: #B5D4F4; --blue-600: #185FA5; --blue-800: #0C447C; --teal-50: #E1F5EE; --teal-100: #9FE1CB; --teal-600: #0F6E56; --teal-800: #085041; --amber-50: #FAEEDA; --amber-100: #FAC775; --amber-600: #854F0B; --amber-800: #633806; --coral-50: #FAECE7; --coral-100: #F5C4B3; --coral-600: #993C1D; --coral-800: #712B13; --purple-50: #EEEDFE; --purple-100: #CECBF6; --purple-600: #534AB7; --purple-800: #3C3489; --green-50: #EAF3DE; --green-600: #3B6D11; --green-800: #27500A; }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: var(--font-sans);
+  }
+  :root {
+    --blue-50: #e6f1fb;
+    --blue-100: #b5d4f4;
+    --blue-600: #185fa5;
+    --blue-800: #0c447c;
+    --teal-50: #e1f5ee;
+    --teal-100: #9fe1cb;
+    --teal-600: #0f6e56;
+    --teal-800: #085041;
+    --amber-50: #faeeda;
+    --amber-100: #fac775;
+    --amber-600: #854f0b;
+    --amber-800: #633806;
+    --coral-50: #faece7;
+    --coral-100: #f5c4b3;
+    --coral-600: #993c1d;
+    --coral-800: #712b13;
+    --purple-50: #eeedfe;
+    --purple-100: #cecbf6;
+    --purple-600: #534ab7;
+    --purple-800: #3c3489;
+    --green-50: #eaf3de;
+    --green-600: #3b6d11;
+    --green-800: #27500a;
+  }
 
-  .container { padding: 0 0 2rem; }
-  .hero { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 2rem; margin-bottom: 1.5rem; }
-  .hero-title { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.5rem; }
-  .hero-sub { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 1.5rem; }
-  .market-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
-  .stat { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1rem; }
-  .stat-num { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
-  .stat-label { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
-  .stat-badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; margin-top: 6px; }
-  .badge-green { background: var(--green-50); color: var(--green-800); }
-  .badge-blue { background: var(--blue-50); color: var(--blue-800); }
-  .badge-amber { background: var(--amber-50); color: var(--amber-800); }
+  .container {
+    padding: 0 0 2rem;
+  }
+  .hero {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero-title {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+  }
+  .hero-sub {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  .market-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .stat {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: 1rem;
+  }
+  .stat-num {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+  .stat-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 6px;
+  }
+  .badge-green {
+    background: var(--green-50);
+    color: var(--green-800);
+  }
+  .badge-blue {
+    background: var(--blue-50);
+    color: var(--blue-800);
+  }
+  .badge-amber {
+    background: var(--amber-50);
+    color: var(--amber-800);
+  }
 
-  .nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
-  .nav-btn { font-size: 13px; padding: 6px 14px; border: 0.5px solid var(--color-border-secondary); border-radius: 20px; background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
-  .nav-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
-  .nav-btn.active { background: var(--color-text-primary); color: var(--color-background-primary); border-color: var(--color-text-primary); }
+  .nav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .nav-btn {
+    font-size: 13px;
+    padding: 6px 14px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: 20px;
+    background: var(--color-background-primary);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover {
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+  }
+  .nav-btn.active {
+    background: var(--color-text-primary);
+    color: var(--color-background-primary);
+    border-color: var(--color-text-primary);
+  }
 
-  .section { display: none; }
-  .section.active { display: block; }
+  .section {
+    display: none;
+  }
+  .section.active {
+    display: block;
+  }
 
-  .section-title { font-size: 18px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.75rem; }
-  .section-desc { font-size: 14px; color: var(--color-text-secondary); line-height: 1.7; margin-bottom: 1.5rem; }
+  .section-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 0.75rem;
+  }
+  .section-desc {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
 
-  .pain-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; border-left: 3px solid; }
-  .pain-card.red { border-left-color: #E24B4A; }
-  .pain-card.amber { border-left-color: #EF9F27; }
-  .pain-card.blue { border-left-color: #378ADD; }
-  .pain-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 0.5rem; }
-  .pain-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
-  .severity { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 12px; white-space: nowrap; }
-  .sev-critical { background: #FCEBEB; color: #791F1F; }
-  .sev-high { background: #FAEEDA; color: #633806; }
-  .sev-medium { background: #E6F1FB; color: #0C447C; }
-  .pain-body { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 0.75rem; }
-  .user-story { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem; font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
-  .user-story strong { color: var(--color-text-primary); font-weight: 500; }
-  .quote-mark { color: var(--color-text-tertiary); font-size: 16px; margin-right: 2px; }
+  .pain-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border-left: 3px solid;
+  }
+  .pain-card.red {
+    border-left-color: #e24b4a;
+  }
+  .pain-card.amber {
+    border-left-color: #ef9f27;
+  }
+  .pain-card.blue {
+    border-left-color: #378add;
+  }
+  .pain-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 0.5rem;
+  }
+  .pain-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+  .severity {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+  .sev-critical {
+    background: #fcebeb;
+    color: #791f1f;
+  }
+  .sev-high {
+    background: #faeeda;
+    color: #633806;
+  }
+  .sev-medium {
+    background: #e6f1fb;
+    color: #0c447c;
+  }
+  .pain-body {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+  .user-story {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 0.75rem;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+  .user-story strong {
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+  .quote-mark {
+    color: var(--color-text-tertiary);
+    font-size: 16px;
+    margin-right: 2px;
+  }
 
-  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
-  .feature-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; }
-  .feature-tier { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 12px; display: inline-block; margin-bottom: 0.5rem; }
-  .tier-free { background: var(--green-50); color: var(--green-800); }
-  .tier-pro { background: var(--blue-50); color: var(--blue-800); }
-  .tier-biz { background: var(--purple-50); color: var(--purple-800); }
-  .feature-name { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.25rem; }
-  .feature-why { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 0.75rem; }
-  .feature-story { font-size: 12px; color: var(--color-text-tertiary); line-height: 1.5; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 0.75rem; }
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .feature-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.25rem;
+  }
+  .feature-tier {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+  .tier-free {
+    background: var(--green-50);
+    color: var(--green-800);
+  }
+  .tier-pro {
+    background: var(--blue-50);
+    color: var(--blue-800);
+  }
+  .tier-biz {
+    background: var(--purple-50);
+    color: var(--purple-800);
+  }
+  .feature-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 0.25rem;
+  }
+  .feature-why {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+  .feature-story {
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+    line-height: 1.5;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    padding-top: 0.75rem;
+  }
 
-  .channel-row { display: flex; align-items: flex-start; gap: 12px; padding: 1rem; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); margin-bottom: 0.75rem; }
-  .channel-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
-  .channel-body { flex: 1; }
-  .channel-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
-  .channel-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
-  .channel-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
-  .ctag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--color-background-secondary); color: var(--color-text-secondary); }
-  .channel-rev { font-size: 12px; font-weight: 500; color: var(--green-600); white-space: nowrap; }
+  .channel-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 1rem;
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 0.75rem;
+  }
+  .channel-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+  .channel-body {
+    flex: 1;
+  }
+  .channel-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 2px;
+  }
+  .channel-desc {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+  .channel-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .ctag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+  }
+  .channel-rev {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--green-600);
+    white-space: nowrap;
+  }
 
-  .comp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .comp-table th { text-align: left; font-weight: 500; font-size: 12px; color: var(--color-text-secondary); padding: 8px 12px; border-bottom: 0.5px solid var(--color-border-tertiary); }
-  .comp-table td { padding: 10px 12px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); vertical-align: top; }
-  .comp-table tr:last-child td { border-bottom: none; }
-  .comp-table tr.highlight { background: var(--blue-50); }
-  .check { color: #1D9E75; font-weight: 500; }
-  .cross { color: #E24B4A; }
-  .partial { color: #EF9F27; }
+  .comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .comp-table th {
+    text-align: left;
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    padding: 8px 12px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .comp-table td {
+    padding: 10px 12px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    color: var(--color-text-primary);
+    vertical-align: top;
+  }
+  .comp-table tr:last-child td {
+    border-bottom: none;
+  }
+  .comp-table tr.highlight {
+    background: var(--blue-50);
+  }
+  .check {
+    color: #1d9e75;
+    font-weight: 500;
+  }
+  .cross {
+    color: #e24b4a;
+  }
+  .partial {
+    color: #ef9f27;
+  }
 
-  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-  .price-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; position: relative; }
-  .price-card.featured { border: 2px solid var(--blue-600); }
-  .price-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 500; padding: 2px 10px; border-radius: 12px; background: var(--blue-600); color: white; white-space: nowrap; }
-  .price-tier { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 4px; }
-  .price-amount { font-size: 26px; font-weight: 500; color: var(--color-text-primary); }
-  .price-period { font-size: 13px; color: var(--color-text-secondary); }
-  .price-target { font-size: 12px; color: var(--color-text-tertiary); margin-bottom: 0.75rem; margin-top: 4px; }
-  .price-features { list-style: none; font-size: 12px; color: var(--color-text-secondary); line-height: 1.8; }
-  .price-features li:before { content: "✓ "; color: #1D9E75; }
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .price-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.25rem;
+    position: relative;
+  }
+  .price-card.featured {
+    border: 2px solid var(--blue-600);
+  }
+  .price-badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 10px;
+    border-radius: 12px;
+    background: var(--blue-600);
+    color: white;
+    white-space: nowrap;
+  }
+  .price-tier {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+  }
+  .price-amount {
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+  .price-period {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+  }
+  .price-target {
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+    margin-bottom: 0.75rem;
+    margin-top: 4px;
+  }
+  .price-features {
+    list-style: none;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+  }
+  .price-features li:before {
+    content: "✓ ";
+    color: #1d9e75;
+  }
 
-  .roadmap { position: relative; padding-left: 20px; }
-  .roadmap:before { content: ""; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 1px; background: var(--color-border-secondary); }
-  .rm-item { position: relative; margin-bottom: 1.5rem; }
-  .rm-dot { position: absolute; left: -17px; top: 5px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--color-border-secondary); background: var(--color-background-primary); }
-  .rm-dot.done { background: #1D9E75; border-color: #1D9E75; }
-  .rm-dot.now { background: var(--blue-600); border-color: var(--blue-600); }
-  .rm-phase { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-  .rm-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
-  .rm-items { font-size: 12px; color: var(--color-text-secondary); line-height: 1.7; }
+  .roadmap {
+    position: relative;
+    padding-left: 20px;
+  }
+  .roadmap:before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--color-border-secondary);
+  }
+  .rm-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+  .rm-dot {
+    position: absolute;
+    left: -17px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--color-border-secondary);
+    background: var(--color-background-primary);
+  }
+  .rm-dot.done {
+    background: #1d9e75;
+    border-color: #1d9e75;
+  }
+  .rm-dot.now {
+    background: var(--blue-600);
+    border-color: var(--blue-600);
+  }
+  .rm-phase {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+  .rm-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+  }
+  .rm-items {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+  }
 
   @media (max-width: 500px) {
-    .pricing-grid { grid-template-columns: 1fr; }
-    .market-stats { grid-template-columns: repeat(2, 1fr); }
+    .pricing-grid {
+      grid-template-columns: 1fr;
+    }
+    .market-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 </style>
 
 <div class="container">
   <div class="hero">
-    <div class="hero-title">URL Shortener & Link Manager SaaS — Market Research & Feature Blueprint</div>
-    <div class="hero-sub">A $1B+ growing market with real user frustration driving organic search intent. People are actively paying — you don't need outbound marketing to win.</div>
+    <div class="hero-title">
+      URL Shortener & Link Manager SaaS - Market Research & Feature Blueprint
+    </div>
+    <div class="hero-sub">
+      A $1B+ growing market with real user frustration driving organic search
+      intent. People are actively paying - you don't need outbound marketing to
+      win.
+    </div>
     <div class="market-stats">
       <div class="stat">
         <div class="stat-num">$1.1B</div>
@@ -127,35 +515,84 @@
   </div>
 
   <div class="nav">
-    <button class="nav-btn active" onclick="showSection('pain')">Pain points</button>
-    <button class="nav-btn" onclick="showSection('features')">Feature guide</button>
-    <button class="nav-btn" onclick="showSection('channels')">Distribution channels</button>
-    <button class="nav-btn" onclick="showSection('competition')">Competitive gap</button>
-    <button class="nav-btn" onclick="showSection('pricing')">Pricing strategy</button>
-    <button class="nav-btn" onclick="showSection('roadmap')">Build roadmap</button>
+    <button class="nav-btn active" onclick="showSection('pain')">
+      Pain points
+    </button>
+    <button class="nav-btn" onclick="showSection('features')">
+      Feature guide
+    </button>
+    <button class="nav-btn" onclick="showSection('channels')">
+      Distribution channels
+    </button>
+    <button class="nav-btn" onclick="showSection('competition')">
+      Competitive gap
+    </button>
+    <button class="nav-btn" onclick="showSection('pricing')">
+      Pricing strategy
+    </button>
+    <button class="nav-btn" onclick="showSection('roadmap')">
+      Build roadmap
+    </button>
   </div>
 
   <!-- PAIN POINTS -->
   <div class="section active" id="section-pain">
-    <div class="section-title">Real pain points — where money is left on the table</div>
-    <div class="section-desc">These are validated frustrations from 1,000+ user reviews on Capterra, G2, and SoftwareAdvice. Each is a paying customer's reason to switch.</div>
-
-    <div class="pain-card red">
-      <div class="pain-header">
-        <div class="pain-title">Bitly's 585% pricing cliff — no middle ground</div>
-        <span class="severity sev-critical">Critical</span>
-      </div>
-      <div class="pain-body">Bitly charges ~$29/mo (Growth) then jumps to $199/mo (Premium). Mid-sized teams — Etsy sellers, freelance marketers, small agencies — get everything they need from Growth but are locked out of city-level analytics, deep link tracking, and retargeting pixels unless they pay 6× more. There is no rational in-between. This exact gap is where your SaaS lives.</div>
-      <div class="user-story"><span class="quote-mark">"</span><strong>Maria, Etsy shop owner:</strong> I sell handmade jewelry and share links to my listings on Pinterest and Instagram. I need to know which pin drove the sale. Bitly free gives me total clicks — useless. Bitly Premium at $199 is absurd for my 3-person shop. I pay $12/mo for an inferior tool because nothing fits in between.</div>
+    <div class="section-title">
+      Real pain points - where money is left on the table
+    </div>
+    <div class="section-desc">
+      These are validated frustrations from 1,000+ user reviews on Capterra, G2,
+      and SoftwareAdvice. Each is a paying customer's reason to switch.
     </div>
 
     <div class="pain-card red">
       <div class="pain-header">
-        <div class="pain-title">Bitly's 2025 interstitial ads on free links</div>
+        <div class="pain-title">
+          Bitly's 585% pricing cliff - no middle ground
+        </div>
         <span class="severity sev-critical">Critical</span>
       </div>
-      <div class="pain-body">In 2025, Bitly began showing a branded "preview" interstitial page with advertisements before redirecting free-tier clicks. Users call this a trust-breaker. If you run an affiliate link or a customer communication, your visitor sees an ad before reaching you. This is Bitly pushing free users to quit — and it's working. They're coming to alternatives right now.</div>
-      <div class="user-story"><span class="quote-mark">"</span><strong>James, newsletter creator:</strong> I sent 4,000 subscribers a link to my new course. Half of them saw a Bitly ad first. Open rates dropped 18% because readers thought the link was spam. I cancelled the same day and searched "Bitly alternative no ads" — that's how I found my current tool.</div>
+      <div class="pain-body">
+        Bitly charges ~$29/mo (Growth) then jumps to $199/mo (Premium).
+        Mid-sized teams - Etsy sellers, freelance marketers, small agencies -
+        get everything they need from Growth but are locked out of city-level
+        analytics, deep link tracking, and retargeting pixels unless they pay 6×
+        more. There is no rational in-between. This exact gap is where your SaaS
+        lives.
+      </div>
+      <div class="user-story">
+        <span class="quote-mark">"</span
+        ><strong>Maria, Etsy shop owner:</strong> I sell handmade jewelry and
+        share links to my listings on Pinterest and Instagram. I need to know
+        which pin drove the sale. Bitly free gives me total clicks - useless.
+        Bitly Premium at $199 is absurd for my 3-person shop. I pay $12/mo for
+        an inferior tool because nothing fits in between.
+      </div>
+    </div>
+
+    <div class="pain-card red">
+      <div class="pain-header">
+        <div class="pain-title">
+          Bitly's 2025 interstitial ads on free links
+        </div>
+        <span class="severity sev-critical">Critical</span>
+      </div>
+      <div class="pain-body">
+        In 2025, Bitly began showing a branded "preview" interstitial page with
+        advertisements before redirecting free-tier clicks. Users call this a
+        trust-breaker. If you run an affiliate link or a customer communication,
+        your visitor sees an ad before reaching you. This is Bitly pushing free
+        users to quit - and it's working. They're coming to alternatives right
+        now.
+      </div>
+      <div class="user-story">
+        <span class="quote-mark">"</span
+        ><strong>James, newsletter creator:</strong> I sent 4,000 subscribers a
+        link to my new course. Half of them saw a Bitly ad first. Open rates
+        dropped 18% because readers thought the link was spam. I cancelled the
+        same day and searched "Bitly alternative no ads" - that's how I found my
+        current tool.
+      </div>
     </div>
 
     <div class="pain-card amber">
@@ -163,195 +600,462 @@
         <div class="pain-title">No link expiration or access control</div>
         <span class="severity sev-high">High</span>
       </div>
-      <div class="pain-body">Marketers run time-limited campaigns. Event organizers share RSVP links. Teachers share quiz URLs. None of the major free tools let you auto-expire a link on a date, or restrict it by domain, number of clicks, or geography. A Christmas campaign link still works in March — embarrassing and wasteful. Enterprise tools have this; solopreneurs don't.</div>
-      <div class="user-story"><span class="quote-mark">"</span><strong>Priya, digital marketing freelancer:</strong> I run flash-sale campaigns for 3 clients. After each sale ends, I manually try to remember to delete the short link or update the destination. Once I forgot and the discount page stayed live for 2 weeks. My client lost $4,000. An auto-expire feature would have saved that relationship.</div>
+      <div class="pain-body">
+        Marketers run time-limited campaigns. Event organizers share RSVP links.
+        Teachers share quiz URLs. None of the major free tools let you
+        auto-expire a link on a date, or restrict it by domain, number of
+        clicks, or geography. A Christmas campaign link still works in March -
+        embarrassing and wasteful. Enterprise tools have this; solopreneurs
+        don't.
+      </div>
+      <div class="user-story">
+        <span class="quote-mark">"</span
+        ><strong>Priya, digital marketing freelancer:</strong> I run flash-sale
+        campaigns for 3 clients. After each sale ends, I manually try to
+        remember to delete the short link or update the destination. Once I
+        forgot and the discount page stayed live for 2 weeks. My client lost
+        $4,000. An auto-expire feature would have saved that relationship.
+      </div>
     </div>
 
     <div class="pain-card amber">
       <div class="pain-header">
-        <div class="pain-title">UTM chaos — no standardized builder</div>
+        <div class="pain-title">UTM chaos - no standardized builder</div>
         <span class="severity sev-high">High</span>
       </div>
-      <div class="pain-body">Every marketing team has a UTM spreadsheet that's a mess. utm_source is sometimes "facebook", sometimes "Facebook", sometimes "FB". This breaks GA4 segmentation. No mainstream URL shortener solves this by enforcing UTM templates. CampaignTrackly does it but charges $45+/mo. A $15/mo shortener with a UTM preset system would dominate.</div>
-      <div class="user-story"><span class="quote-mark">"</span><strong>Tom, growth marketer at a Series A startup:</strong> We ran 22 campaigns last quarter. My GA4 report has 14 variations of "Instagram" as a traffic source. Half our attribution data is garbage. I'd pay for a tool that forces my team to pick from a dropdown instead of free-typing UTM values.</div>
+      <div class="pain-body">
+        Every marketing team has a UTM spreadsheet that's a mess. utm_source is
+        sometimes "facebook", sometimes "Facebook", sometimes "FB". This breaks
+        GA4 segmentation. No mainstream URL shortener solves this by enforcing
+        UTM templates. CampaignTrackly does it but charges $45+/mo. A $15/mo
+        shortener with a UTM preset system would dominate.
+      </div>
+      <div class="user-story">
+        <span class="quote-mark">"</span
+        ><strong>Tom, growth marketer at a Series A startup:</strong> We ran 22
+        campaigns last quarter. My GA4 report has 14 variations of "Instagram"
+        as a traffic source. Half our attribution data is garbage. I'd pay for a
+        tool that forces my team to pick from a dropdown instead of free-typing
+        UTM values.
+      </div>
     </div>
 
     <div class="pain-card blue">
       <div class="pain-header">
-        <div class="pain-title">No retargeting pixel support (even on paid plans)</div>
+        <div class="pain-title">
+          No retargeting pixel support (even on paid plans)
+        </div>
         <span class="severity sev-high">High</span>
       </div>
-      <div class="pain-body">Bitly offers zero retargeting on all plans. If someone clicks your link, you can't add them to a Facebook or Google remarketing audience. This is a massive gap for e-commerce and affiliate marketers who use short links as top-of-funnel touchpoints. Replug and SHORTEN.REST offer this but are expensive or niche.</div>
-      <div class="user-story"><span class="quote-mark">"</span><strong>Sophia, affiliate marketer:</strong> I share Amazon links on Reddit threads. I can't add a retargeting pixel to Amazon's domain. But I could add one to my short link. Nobody cheap does this. I'd switch to any tool offering Facebook pixel on link clicks for under $20/mo.</div>
+      <div class="pain-body">
+        Bitly offers zero retargeting on all plans. If someone clicks your link,
+        you can't add them to a Facebook or Google remarketing audience. This is
+        a massive gap for e-commerce and affiliate marketers who use short links
+        as top-of-funnel touchpoints. Replug and SHORTEN.REST offer this but are
+        expensive or niche.
+      </div>
+      <div class="user-story">
+        <span class="quote-mark">"</span
+        ><strong>Sophia, affiliate marketer:</strong> I share Amazon links on
+        Reddit threads. I can't add a retargeting pixel to Amazon's domain. But
+        I could add one to my short link. Nobody cheap does this. I'd switch to
+        any tool offering Facebook pixel on link clicks for under $20/mo.
+      </div>
     </div>
 
     <div class="pain-card blue">
       <div class="pain-header">
-        <div class="pain-title">Dead links from abandoned services (goo.gl, ow.ly shutdown)</div>
+        <div class="pain-title">
+          Dead links from abandoned services (goo.gl, ow.ly shutdown)
+        </div>
         <span class="severity sev-medium">Medium</span>
       </div>
-      <div class="pain-body">Google killed goo.gl in 2025. Thousands of blog posts, PDFs, and printed materials now have dead links. This created a wave of one-time users searching for permanent, reliable shorteners — they've been burned and want ownership. They'll pay for a tool that lets them use their own domain so the link lives forever, independent of any vendor.</div>
-      <div class="user-story"><span class="quote-mark">"</span><strong>David, blogger and educator:</strong> I published a course workbook in 2021 with 40 goo.gl links. Every single one is now dead. 6,000 students downloaded that PDF. I need a shortener I can host on my own domain so this never happens again — I'm willing to pay $20/mo for peace of mind.</div>
+      <div class="pain-body">
+        Google killed goo.gl in 2025. Thousands of blog posts, PDFs, and printed
+        materials now have dead links. This created a wave of one-time users
+        searching for permanent, reliable shorteners - they've been burned and
+        want ownership. They'll pay for a tool that lets them use their own
+        domain so the link lives forever, independent of any vendor.
+      </div>
+      <div class="user-story">
+        <span class="quote-mark">"</span
+        ><strong>David, blogger and educator:</strong> I published a course
+        workbook in 2021 with 40 goo.gl links. Every single one is now dead.
+        6,000 students downloaded that PDF. I need a shortener I can host on my
+        own domain so this never happens again - I'm willing to pay $20/mo for
+        peace of mind.
+      </div>
     </div>
   </div>
 
   <!-- FEATURES -->
   <div class="section" id="section-features">
-    <div class="section-title">Feature guide — what to build, why, and for whom</div>
-    <div class="section-desc">Organized by value tier. Start with Core, add Pro to drive upgrades, build Business to land teams.</div>
+    <div class="section-title">
+      Feature guide - what to build, why, and for whom
+    </div>
+    <div class="section-desc">
+      Organized by value tier. Start with Core, add Pro to drive upgrades, build
+      Business to land teams.
+    </div>
 
-    <div style="font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 0.75rem;">Core features (free & entry-paid)</div>
+    <div
+      style="
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--color-text-secondary);
+        margin-bottom: 0.75rem;
+      "
+    >
+      Core features (free & entry-paid)
+    </div>
     <div class="feature-grid">
       <div class="feature-card">
         <span class="feature-tier tier-free">Free</span>
         <div class="feature-name">One-click link shortening</div>
-        <div class="feature-why">The atomic unit. Custom slugs (your-brand.co/sale-jan) build trust — generic random strings lose clicks. Allow editing the slug post-creation; this alone beats half the competition.</div>
-        <div class="feature-story">User story: Lena is writing an email campaign at 11pm. She pastes a 200-char Amazon URL, types a clean slug in 5 seconds, copies the link. She never has to think about it again.</div>
+        <div class="feature-why">
+          The atomic unit. Custom slugs (your-brand.co/sale-jan) build trust -
+          generic random strings lose clicks. Allow editing the slug
+          post-creation; this alone beats half the competition.
+        </div>
+        <div class="feature-story">
+          User story: Lena is writing an email campaign at 11pm. She pastes a
+          200-char Amazon URL, types a clean slug in 5 seconds, copies the link.
+          She never has to think about it again.
+        </div>
       </div>
       <div class="feature-card">
         <span class="feature-tier tier-free">Free</span>
         <div class="feature-name">Click analytics dashboard</div>
-        <div class="feature-why">Show total clicks, unique visitors, referrer sources, device type (mobile/desktop), and country — all on a single visual card per link. Free users get 30 days; paid get forever.</div>
-        <div class="feature-story">User story: Marcus checks which of his 5 TikTok bio links got the most clicks this week, so he knows what content to double down on before shooting Thursday's video.</div>
+        <div class="feature-why">
+          Show total clicks, unique visitors, referrer sources, device type
+          (mobile/desktop), and country - all on a single visual card per link.
+          Free users get 30 days; paid get forever.
+        </div>
+        <div class="feature-story">
+          User story: Marcus checks which of his 5 TikTok bio links got the most
+          clicks this week, so he knows what content to double down on before
+          shooting Thursday's video.
+        </div>
       </div>
       <div class="feature-card">
         <span class="feature-tier tier-free">Free</span>
         <div class="feature-name">QR code generator</div>
-        <div class="feature-why">Every short link should auto-generate a downloadable QR code (PNG, SVG). Physical-world use cases — menus, business cards, event posters — are enormous. Dynamic QRs (destination editable after printing) are a massive upsell hook.</div>
-        <div class="feature-story">User story: Priya prints 500 flyers for her yoga studio's open day. She uses the QR to point to a registration form, but later changes the destination to a thank-you page — all without reprinting.</div>
+        <div class="feature-why">
+          Every short link should auto-generate a downloadable QR code (PNG,
+          SVG). Physical-world use cases - menus, business cards, event posters
+          - are enormous. Dynamic QRs (destination editable after printing) are
+          a massive upsell hook.
+        </div>
+        <div class="feature-story">
+          User story: Priya prints 500 flyers for her yoga studio's open day.
+          She uses the QR to point to a registration form, but later changes the
+          destination to a thank-you page - all without reprinting.
+        </div>
       </div>
       <div class="feature-card">
         <span class="feature-tier tier-pro">Pro</span>
         <div class="feature-name">Link expiration controls</div>
-        <div class="feature-why">Set a link to expire by date, by click count, or both. After expiry, redirect to a custom "offer ended" page rather than a broken link. Essential for flash sales, event RSVPs, limited-time content, and exam links.</div>
-        <div class="feature-story">User story: Amanda runs a Black Friday campaign. She sets her sale link to expire on Nov 30 at midnight, redirect to her regular product page, and show a "sorry, this offer has ended" banner — all configured in 2 minutes.</div>
+        <div class="feature-why">
+          Set a link to expire by date, by click count, or both. After expiry,
+          redirect to a custom "offer ended" page rather than a broken link.
+          Essential for flash sales, event RSVPs, limited-time content, and exam
+          links.
+        </div>
+        <div class="feature-story">
+          User story: Amanda runs a Black Friday campaign. She sets her sale
+          link to expire on Nov 30 at midnight, redirect to her regular product
+          page, and show a "sorry, this offer has ended" banner - all configured
+          in 2 minutes.
+        </div>
       </div>
       <div class="feature-card">
         <span class="feature-tier tier-pro">Pro</span>
         <div class="feature-name">UTM template builder</div>
-        <div class="feature-why">Create reusable UTM presets (source/medium/campaign templates). When shortening a link, pick a preset from a dropdown — no more manual typing. Enforce team-wide UTM standards to keep GA4 clean.</div>
-        <div class="feature-story">User story: Tom's team now picks from a dropdown: "Instagram Story", "Email Newsletter", "Twitter". GA4 finally shows clean segments. He ran a 2-hour workshop before; now new hires self-serve correctly from day 1.</div>
+        <div class="feature-why">
+          Create reusable UTM presets (source/medium/campaign templates). When
+          shortening a link, pick a preset from a dropdown - no more manual
+          typing. Enforce team-wide UTM standards to keep GA4 clean.
+        </div>
+        <div class="feature-story">
+          User story: Tom's team now picks from a dropdown: "Instagram Story",
+          "Email Newsletter", "Twitter". GA4 finally shows clean segments. He
+          ran a 2-hour workshop before; now new hires self-serve correctly from
+          day 1.
+        </div>
       </div>
       <div class="feature-card">
         <span class="feature-tier tier-pro">Pro</span>
         <div class="feature-name">Custom domain (branded links)</div>
-        <div class="feature-why">Point your own domain (go.yourbrand.com) to the platform. Links look professional, build trust, and survive vendor changes. This is the single biggest upgrade driver in link management. Users who connect a custom domain churn at 3× lower rates.</div>
-        <div class="feature-story">User story: Kevin's agency creates go.clientbrand.com for each client. When a client asks "who owns my links?", Kevin can show them they do. This is a dealmaker in enterprise sales.</div>
+        <div class="feature-why">
+          Point your own domain (go.yourbrand.com) to the platform. Links look
+          professional, build trust, and survive vendor changes. This is the
+          single biggest upgrade driver in link management. Users who connect a
+          custom domain churn at 3× lower rates.
+        </div>
+        <div class="feature-story">
+          User story: Kevin's agency creates go.clientbrand.com for each client.
+          When a client asks "who owns my links?", Kevin can show them they do.
+          This is a dealmaker in enterprise sales.
+        </div>
       </div>
     </div>
 
-    <div style="font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin: 1.5rem 0 0.75rem;">Power features (Pro & Business)</div>
+    <div
+      style="
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--color-text-secondary);
+        margin: 1.5rem 0 0.75rem;
+      "
+    >
+      Power features (Pro & Business)
+    </div>
     <div class="feature-grid">
       <div class="feature-card">
         <span class="feature-tier tier-pro">Pro</span>
         <div class="feature-name">Retargeting pixel injection</div>
-        <div class="feature-why">Let users attach a Facebook Pixel or Google Ads tag to any short link. Whoever clicks the link gets added to a custom audience — even if the destination is someone else's domain (Amazon, YouTube). This is the #1 missing feature Bitly users complain about.</div>
-        <div class="feature-story">User story: Sophia shares an Amazon affiliate link on Reddit. Everyone who clicks gets added to her Facebook retargeting list. She runs a follow-up ad 2 days later to this exact audience. Her conversion rate doubles.</div>
+        <div class="feature-why">
+          Let users attach a Facebook Pixel or Google Ads tag to any short link.
+          Whoever clicks the link gets added to a custom audience - even if the
+          destination is someone else's domain (Amazon, YouTube). This is the #1
+          missing feature Bitly users complain about.
+        </div>
+        <div class="feature-story">
+          User story: Sophia shares an Amazon affiliate link on Reddit. Everyone
+          who clicks gets added to her Facebook retargeting list. She runs a
+          follow-up ad 2 days later to this exact audience. Her conversion rate
+          doubles.
+        </div>
       </div>
       <div class="feature-card">
         <span class="feature-tier tier-pro">Pro</span>
         <div class="feature-name">Smart/conditional redirects</div>
-        <div class="feature-why">One short link, multiple destinations based on rules: mobile users → App Store, desktop → web page; US visitors → USD pricing page, EU → EUR; weekday clicks → main site, weekend → support page. Huge for global campaigns and A/B testing.</div>
-        <div class="feature-story">User story: Rachel sends one link in her newsletter. US readers see the USD checkout. UK readers see the GBP checkout. She sets this up once with a dropdown condition — no code, no developer needed.</div>
+        <div class="feature-why">
+          One short link, multiple destinations based on rules: mobile users →
+          App Store, desktop → web page; US visitors → USD pricing page, EU →
+          EUR; weekday clicks → main site, weekend → support page. Huge for
+          global campaigns and A/B testing.
+        </div>
+        <div class="feature-story">
+          User story: Rachel sends one link in her newsletter. US readers see
+          the USD checkout. UK readers see the GBP checkout. She sets this up
+          once with a dropdown condition - no code, no developer needed.
+        </div>
       </div>
       <div class="feature-card">
         <span class="feature-tier tier-biz">Business</span>
         <div class="feature-name">Link-in-bio page builder</div>
-        <div class="feature-why">Creators pay $7-15/mo for Linktree or Beacons. Bundle a simple bio page (with your custom domain) inside your link manager — no extra charge at Pro tier. Instant customer acquisition from Linktree refugees.</div>
-        <div class="feature-story">User story: Carlos is an Instagrammer with 80k followers. He cancels Linktree ($9/mo) because your tool lets him create carlos.links/go with all his links, using his own domain, with click analytics per link.</div>
+        <div class="feature-why">
+          Creators pay $7-15/mo for Linktree or Beacons. Bundle a simple bio
+          page (with your custom domain) inside your link manager - no extra
+          charge at Pro tier. Instant customer acquisition from Linktree
+          refugees.
+        </div>
+        <div class="feature-story">
+          User story: Carlos is an Instagrammer with 80k followers. He cancels
+          Linktree ($9/mo) because your tool lets him create carlos.links/go
+          with all his links, using his own domain, with click analytics per
+          link.
+        </div>
       </div>
       <div class="feature-card">
         <span class="feature-tier tier-biz">Business</span>
         <div class="feature-name">Team workspaces & permissions</div>
-        <div class="feature-why">Agencies and marketing teams need to separate client accounts, assign viewer/editor/admin roles, and audit who created which link. This unlocks the per-seat pricing model and makes you stickier in organizations.</div>
-        <div class="feature-story">User story: An agency creates one workspace per client. Junior designers can create links but not delete them. The client has read-only access to see their analytics. Everything is contained and professional.</div>
+        <div class="feature-why">
+          Agencies and marketing teams need to separate client accounts, assign
+          viewer/editor/admin roles, and audit who created which link. This
+          unlocks the per-seat pricing model and makes you stickier in
+          organizations.
+        </div>
+        <div class="feature-story">
+          User story: An agency creates one workspace per client. Junior
+          designers can create links but not delete them. The client has
+          read-only access to see their analytics. Everything is contained and
+          professional.
+        </div>
       </div>
       <div class="feature-card">
         <span class="feature-tier tier-biz">Business</span>
         <div class="feature-name">API + Zapier/Make integration</div>
-        <div class="feature-why">Developers and power users automate link creation via REST API. Zapier + Make integrations let non-coders auto-shorten links from Google Sheets, new blog posts, Shopify product pages, Airtable records, etc. This opens the automation market.</div>
-        <div class="feature-story">User story: Every time David publishes a blog post in WordPress, Zapier automatically creates a short link, posts it to his Slack #publishing channel, and adds it to his editorial Airtable. Zero manual steps.</div>
+        <div class="feature-why">
+          Developers and power users automate link creation via REST API. Zapier
+          + Make integrations let non-coders auto-shorten links from Google
+          Sheets, new blog posts, Shopify product pages, Airtable records, etc.
+          This opens the automation market.
+        </div>
+        <div class="feature-story">
+          User story: Every time David publishes a blog post in WordPress,
+          Zapier automatically creates a short link, posts it to his Slack
+          #publishing channel, and adds it to his editorial Airtable. Zero
+          manual steps.
+        </div>
       </div>
       <div class="feature-card">
         <span class="feature-tier tier-pro">Pro</span>
         <div class="feature-name">Chrome extension (one-click)</div>
-        <div class="feature-why">Right-click on any page → "Shorten this URL" → link copied. No tab switching. Huge retention driver — users who install the extension use the product daily. This also drives organic word-of-mouth in the Chrome Web Store.</div>
-        <div class="feature-story">User story: Nina curates content for her email newsletter. She browses articles and right-clicks to shorten each one directly into her dashboard. What took 3 steps per link now takes 1. She shares the extension with her co-host.</div>
+        <div class="feature-why">
+          Right-click on any page → "Shorten this URL" → link copied. No tab
+          switching. Huge retention driver - users who install the extension use
+          the product daily. This also drives organic word-of-mouth in the
+          Chrome Web Store.
+        </div>
+        <div class="feature-story">
+          User story: Nina curates content for her email newsletter. She browses
+          articles and right-clicks to shorten each one directly into her
+          dashboard. What took 3 steps per link now takes 1. She shares the
+          extension with her co-host.
+        </div>
       </div>
     </div>
   </div>
 
   <!-- DISTRIBUTION CHANNELS -->
   <div class="section" id="section-channels">
-    <div class="section-title">Where to find users who are already searching — no marketing needed</div>
-    <div class="section-desc">These are organic channels where your ideal customer is actively looking for what you build. Rank well in these and revenue comes to you.</div>
+    <div class="section-title">
+      Where to find users who are already searching - no marketing needed
+    </div>
+    <div class="section-desc">
+      These are organic channels where your ideal customer is actively looking
+      for what you build. Rank well in these and revenue comes to you.
+    </div>
 
     <div class="channel-row">
-      <div class="channel-icon" style="background: var(--blue-50);">🔍</div>
+      <div class="channel-icon" style="background: var(--blue-50)">🔍</div>
       <div class="channel-body">
-        <div class="channel-title">SEO — Alternatives & comparison searches</div>
-        <div class="channel-desc">Searches like "Bitly alternative free", "bitly free plan limits", "url shortener with analytics cheap", "tinyurl custom domain" have huge volume and high commercial intent. Write comparison pages targeting exact phrases. Users are in buy mode.</div>
-        <div class="channel-tags"><span class="ctag">High intent</span><span class="ctag">Long-term</span><span class="ctag">Compounding</span></div>
+        <div class="channel-title">
+          SEO - Alternatives & comparison searches
+        </div>
+        <div class="channel-desc">
+          Searches like "Bitly alternative free", "bitly free plan limits", "url
+          shortener with analytics cheap", "tinyurl custom domain" have huge
+          volume and high commercial intent. Write comparison pages targeting
+          exact phrases. Users are in buy mode.
+        </div>
+        <div class="channel-tags">
+          <span class="ctag">High intent</span
+          ><span class="ctag">Long-term</span
+          ><span class="ctag">Compounding</span>
+        </div>
       </div>
       <div class="channel-rev">$$ Revenue</div>
     </div>
 
     <div class="channel-row">
-      <div class="channel-icon" style="background: var(--teal-50);">🧩</div>
+      <div class="channel-icon" style="background: var(--teal-50)">🧩</div>
       <div class="channel-body">
         <div class="channel-title">Chrome Web Store listing</div>
-        <div class="channel-desc">The Chrome extension is both a product feature and a discovery channel. 700+ ratings for competing URL shortener extensions show real demand. Users searching "url shortener chrome extension" convert to paid accounts at significantly higher rates than web visitors — the extension is always there.</div>
-        <div class="channel-tags"><span class="ctag">Free distribution</span><span class="ctag">High retention</span><span class="ctag">Low competition</span></div>
+        <div class="channel-desc">
+          The Chrome extension is both a product feature and a discovery
+          channel. 700+ ratings for competing URL shortener extensions show real
+          demand. Users searching "url shortener chrome extension" convert to
+          paid accounts at significantly higher rates than web visitors - the
+          extension is always there.
+        </div>
+        <div class="channel-tags">
+          <span class="ctag">Free distribution</span
+          ><span class="ctag">High retention</span
+          ><span class="ctag">Low competition</span>
+        </div>
       </div>
       <div class="channel-rev">$$$ Revenue</div>
     </div>
 
     <div class="channel-row">
-      <div class="channel-icon" style="background: var(--amber-50);">🛍</div>
+      <div class="channel-icon" style="background: var(--amber-50)">🛍</div>
       <div class="channel-body">
         <div class="channel-title">Etsy seller community</div>
-        <div class="channel-desc">Etsy sellers heavily promote on Pinterest, Instagram, and TikTok — and need to track which platform drives sales. They're not marketers; they want simple tools that "just work." Etsy seller Facebook groups (300k+ members each) are active and love practical tools. A "track your Etsy traffic" positioning angles directly into this audience. Pabbly already shows Etsy+URL shortener integrations exist.</div>
-        <div class="channel-tags"><span class="ctag">Etsy forums</span><span class="ctag">FB groups</span><span class="ctag">Pinterest tutorials</span></div>
+        <div class="channel-desc">
+          Etsy sellers heavily promote on Pinterest, Instagram, and TikTok - and
+          need to track which platform drives sales. They're not marketers; they
+          want simple tools that "just work." Etsy seller Facebook groups (300k+
+          members each) are active and love practical tools. A "track your Etsy
+          traffic" positioning angles directly into this audience. Pabbly
+          already shows Etsy+URL shortener integrations exist.
+        </div>
+        <div class="channel-tags">
+          <span class="ctag">Etsy forums</span
+          ><span class="ctag">FB groups</span
+          ><span class="ctag">Pinterest tutorials</span>
+        </div>
       </div>
       <div class="channel-rev">$$ Revenue</div>
     </div>
 
     <div class="channel-row">
-      <div class="channel-icon" style="background: var(--coral-50);">📧</div>
+      <div class="channel-icon" style="background: var(--coral-50)">📧</div>
       <div class="channel-body">
         <div class="channel-title">Newsletter creator communities</div>
-        <div class="channel-desc">Substack, Beehiiv, and ConvertKit newsletter writers need trackable links for every issue. They mention tools in their newsletters — a mention from one newsletter creator can drive hundreds of signups. They also participate in Slack communities (Newsletter Crew, Indie Hackers) where tool recommendations circulate constantly.</div>
-        <div class="channel-tags"><span class="ctag">Indie Hackers</span><span class="ctag">Newsletter Crew Slack</span><span class="ctag">Twitter/X</span></div>
+        <div class="channel-desc">
+          Substack, Beehiiv, and ConvertKit newsletter writers need trackable
+          links for every issue. They mention tools in their newsletters - a
+          mention from one newsletter creator can drive hundreds of signups.
+          They also participate in Slack communities (Newsletter Crew, Indie
+          Hackers) where tool recommendations circulate constantly.
+        </div>
+        <div class="channel-tags">
+          <span class="ctag">Indie Hackers</span
+          ><span class="ctag">Newsletter Crew Slack</span
+          ><span class="ctag">Twitter/X</span>
+        </div>
       </div>
       <div class="channel-rev">$$$ Revenue</div>
     </div>
 
     <div class="channel-row">
-      <div class="channel-icon" style="background: var(--purple-50);">🤝</div>
+      <div class="channel-icon" style="background: var(--purple-50)">🤝</div>
       <div class="channel-body">
         <div class="channel-title">Zapier & Make marketplace</div>
-        <div class="channel-desc">Building a Zapier app costs ~40 hours but delivers passive discovery forever. "URL shortener" is one of the most connected app categories on Zapier. Users searching for automations including URL shortening find your app in the Zapier marketplace — intent is very high.</div>
-        <div class="channel-tags"><span class="ctag">Zapier app directory</span><span class="ctag">Make marketplace</span><span class="ctag">n8n</span></div>
+        <div class="channel-desc">
+          Building a Zapier app costs ~40 hours but delivers passive discovery
+          forever. "URL shortener" is one of the most connected app categories
+          on Zapier. Users searching for automations including URL shortening
+          find your app in the Zapier marketplace - intent is very high.
+        </div>
+        <div class="channel-tags">
+          <span class="ctag">Zapier app directory</span
+          ><span class="ctag">Make marketplace</span
+          ><span class="ctag">n8n</span>
+        </div>
       </div>
       <div class="channel-rev">$$ Revenue</div>
     </div>
 
     <div class="channel-row">
-      <div class="channel-icon" style="background: var(--green-50);">🏪</div>
+      <div class="channel-icon" style="background: var(--green-50)">🏪</div>
       <div class="channel-body">
         <div class="channel-title">Shopify & WordPress plugin ecosystems</div>
-        <div class="channel-desc">A Shopify app or WordPress plugin that auto-shortens product URLs, generates QR codes for packaging, and tracks which external traffic converts — this is extremely high commercial value. Shopify's 1.7M merchants are all potential customers. App listing is free and searchable.</div>
-        <div class="channel-tags"><span class="ctag">Shopify App Store</span><span class="ctag">WordPress.org</span><span class="ctag">WooCommerce</span></div>
+        <div class="channel-desc">
+          A Shopify app or WordPress plugin that auto-shortens product URLs,
+          generates QR codes for packaging, and tracks which external traffic
+          converts - this is extremely high commercial value. Shopify's 1.7M
+          merchants are all potential customers. App listing is free and
+          searchable.
+        </div>
+        <div class="channel-tags">
+          <span class="ctag">Shopify App Store</span
+          ><span class="ctag">WordPress.org</span
+          ><span class="ctag">WooCommerce</span>
+        </div>
       </div>
       <div class="channel-rev">$$$$ Revenue</div>
     </div>
 
     <div class="channel-row">
-      <div class="channel-icon" style="background: var(--blue-50);">📱</div>
+      <div class="channel-icon" style="background: var(--blue-50)">📱</div>
       <div class="channel-body">
         <div class="channel-title">ProductHunt & AppSumo launches</div>
-        <div class="channel-desc">A ProductHunt launch (free) with a compelling position — "The URL shortener that doesn't show ads, ever" or "Bitly but fair" — can drive 500-2000 signups in 24 hours from the exact audience that pays for SaaS. AppSumo lifetime deals build initial MRR and generate reviews that fuel ongoing conversions.</div>
-        <div class="channel-tags"><span class="ctag">One-time launch burst</span><span class="ctag">Review generation</span><span class="ctag">Backlinks</span></div>
+        <div class="channel-desc">
+          A ProductHunt launch (free) with a compelling position - "The URL
+          shortener that doesn't show ads, ever" or "Bitly but fair" - can drive
+          500-2000 signups in 24 hours from the exact audience that pays for
+          SaaS. AppSumo lifetime deals build initial MRR and generate reviews
+          that fuel ongoing conversions.
+        </div>
+        <div class="channel-tags">
+          <span class="ctag">One-time launch burst</span
+          ><span class="ctag">Review generation</span
+          ><span class="ctag">Backlinks</span>
+        </div>
       </div>
       <div class="channel-rev">$$ Revenue</div>
     </div>
@@ -359,10 +1063,21 @@
 
   <!-- COMPETITION -->
   <div class="section" id="section-competition">
-    <div class="section-title">Competitive gap analysis — where you can win</div>
-    <div class="section-desc">Key competitors and their gaps. Your opportunity is priced between "free/broken" and "enterprise/expensive".</div>
+    <div class="section-title">
+      Competitive gap analysis - where you can win
+    </div>
+    <div class="section-desc">
+      Key competitors and their gaps. Your opportunity is priced between
+      "free/broken" and "enterprise/expensive".
+    </div>
 
-    <div style="overflow-x: auto; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg);">
+    <div
+      style="
+        overflow-x: auto;
+        border: 0.5px solid var(--color-border-tertiary);
+        border-radius: var(--border-radius-lg);
+      "
+    >
       <table class="comp-table">
         <thead>
           <tr>
@@ -458,15 +1173,30 @@
         </tbody>
       </table>
     </div>
-    <div style="font-size: 12px; color: var(--color-text-tertiary); margin-top: 0.75rem;">Your winning position: full-featured at $15/mo — cheaper than any comparable paid plan, with features no one at this price point offers (expiry, retargeting, UTM presets, link-in-bio).</div>
+    <div
+      style="
+        font-size: 12px;
+        color: var(--color-text-tertiary);
+        margin-top: 0.75rem;
+      "
+    >
+      Your winning position: full-featured at $15/mo - cheaper than any
+      comparable paid plan, with features no one at this price point offers
+      (expiry, retargeting, UTM presets, link-in-bio).
+    </div>
   </div>
 
   <!-- PRICING -->
   <div class="section" id="section-pricing">
-    <div class="section-title">Pricing strategy — designed to convert, not confuse</div>
-    <div class="section-desc">Three tiers, no tricks, no interstitials. The goal is to make upgrading feel obvious, not forced.</div>
+    <div class="section-title">
+      Pricing strategy - designed to convert, not confuse
+    </div>
+    <div class="section-desc">
+      Three tiers, no tricks, no interstitials. The goal is to make upgrading
+      feel obvious, not forced.
+    </div>
 
-    <div class="pricing-grid" style="margin-bottom: 1.5rem;">
+    <div class="pricing-grid" style="margin-bottom: 1.5rem">
       <div class="price-card">
         <div class="price-tier">Starter</div>
         <div class="price-amount">Free</div>
@@ -477,18 +1207,21 @@
           <li>Basic analytics (30 days)</li>
           <li>QR codes (static)</li>
           <li>Your-brand.short.io domain</li>
-          <li>No ads — ever</li>
+          <li>No ads - ever</li>
         </ul>
       </div>
       <div class="price-card featured">
         <div class="price-badge">Most popular</div>
         <div class="price-tier">Pro</div>
-        <div><span class="price-amount">$15</span><span class="price-period">/mo</span></div>
+        <div>
+          <span class="price-amount">$15</span
+          ><span class="price-period">/mo</span>
+        </div>
         <div class="price-target">Creators, freelancers, Etsy sellers</div>
         <ul class="price-features">
           <li>Unlimited links</li>
           <li>1 custom domain</li>
-          <li>Full analytics — forever</li>
+          <li>Full analytics - forever</li>
           <li>Link expiration (date + clicks)</li>
           <li>UTM template presets</li>
           <li>Retargeting pixels (FB + Google)</li>
@@ -500,7 +1233,10 @@
       </div>
       <div class="price-card">
         <div class="price-tier">Business</div>
-        <div><span class="price-amount">$49</span><span class="price-period">/mo</span></div>
+        <div>
+          <span class="price-amount">$49</span
+          ><span class="price-period">/mo</span>
+        </div>
         <div class="price-target">Agencies, marketing teams</div>
         <ul class="price-features">
           <li>Everything in Pro</li>
@@ -515,56 +1251,101 @@
       </div>
     </div>
 
-    <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; font-size: 13px; color: var(--color-text-secondary); line-height: 1.7;">
-      <strong style="color: var(--color-text-primary); font-weight: 500;">Pricing rationale:</strong> At $15/mo Pro, you're below Bitly Growth ($29), Rebrandly ($24), and Short.io ($19) while offering features none of them include (expiry, retargeting, UTM presets, link-in-bio). The free plan is genuinely generous — 50 links is enough to prove value without credit card anxiety. Upgraders stay because of the custom domain; that's your retention moat.
+    <div
+      style="
+        background: var(--color-background-secondary);
+        border-radius: var(--border-radius-md);
+        padding: 1rem;
+        font-size: 13px;
+        color: var(--color-text-secondary);
+        line-height: 1.7;
+      "
+    >
+      <strong style="color: var(--color-text-primary); font-weight: 500"
+        >Pricing rationale:</strong
+      >
+      At $15/mo Pro, you're below Bitly Growth ($29), Rebrandly ($24), and
+      Short.io ($19) while offering features none of them include (expiry,
+      retargeting, UTM presets, link-in-bio). The free plan is genuinely
+      generous - 50 links is enough to prove value without credit card anxiety.
+      Upgraders stay because of the custom domain; that's your retention moat.
     </div>
   </div>
 
   <!-- ROADMAP -->
   <div class="section" id="section-roadmap">
-    <div class="section-title">Build roadmap — what to ship and when</div>
-    <div class="section-desc">Prioritized for fastest path to $5k MRR. Ship the core fast, add distribution hooks in month 2, layer on power features as you grow.</div>
+    <div class="section-title">Build roadmap - what to ship and when</div>
+    <div class="section-desc">
+      Prioritized for fastest path to $5k MRR. Ship the core fast, add
+      distribution hooks in month 2, layer on power features as you grow.
+    </div>
 
     <div class="roadmap">
       <div class="rm-item">
         <div class="rm-dot now"></div>
-        <div class="rm-phase">Month 1 — MVP (must ship to launch)</div>
+        <div class="rm-phase">Month 1 - MVP (must ship to launch)</div>
         <div class="rm-title">Core link engine + analytics</div>
-        <div class="rm-items">Link creation with custom slugs · Click analytics dashboard (country, device, referrer) · QR code generator · Custom domain support · No-ad redirect · Auth (email + Google OAuth)</div>
+        <div class="rm-items">
+          Link creation with custom slugs · Click analytics dashboard (country,
+          device, referrer) · QR code generator · Custom domain support · No-ad
+          redirect · Auth (email + Google OAuth)
+        </div>
       </div>
       <div class="rm-item">
         <div class="rm-dot"></div>
-        <div class="rm-phase">Month 2 — Growth features (drive upgrades)</div>
+        <div class="rm-phase">Month 2 - Growth features (drive upgrades)</div>
         <div class="rm-title">Retention & conversion hooks</div>
-        <div class="rm-items">Link expiration (date + click cap) · UTM template builder · Chrome extension · Link-in-bio page builder · ProductHunt launch · SEO landing pages (Bitly alternatives)</div>
+        <div class="rm-items">
+          Link expiration (date + click cap) · UTM template builder · Chrome
+          extension · Link-in-bio page builder · ProductHunt launch · SEO
+          landing pages (Bitly alternatives)
+        </div>
       </div>
       <div class="rm-item">
         <div class="rm-dot"></div>
-        <div class="rm-phase">Month 3-4 — Distribution (unlock new channels)</div>
+        <div class="rm-phase">
+          Month 3-4 - Distribution (unlock new channels)
+        </div>
         <div class="rm-title">Integrations & platform plays</div>
-        <div class="rm-items">Zapier app · Retargeting pixel injection (FB + Google) · WordPress plugin · REST API v1 · Shopify app MVP · AppSumo listing</div>
+        <div class="rm-items">
+          Zapier app · Retargeting pixel injection (FB + Google) · WordPress
+          plugin · REST API v1 · Shopify app MVP · AppSumo listing
+        </div>
       </div>
       <div class="rm-item">
         <div class="rm-dot"></div>
-        <div class="rm-phase">Month 5-6 — Business tier (unlock teams)</div>
+        <div class="rm-phase">Month 5-6 - Business tier (unlock teams)</div>
         <div class="rm-title">Agency & team features</div>
-        <div class="rm-items">Team workspaces + role permissions · Smart conditional redirects (geo, device, time) · White-label QR codes · Client reporting exports · Make.com integration · Volume API plans</div>
+        <div class="rm-items">
+          Team workspaces + role permissions · Smart conditional redirects (geo,
+          device, time) · White-label QR codes · Client reporting exports ·
+          Make.com integration · Volume API plans
+        </div>
       </div>
       <div class="rm-item">
         <div class="rm-dot"></div>
-        <div class="rm-phase">Month 7+ — Moat builders</div>
+        <div class="rm-phase">Month 7+ - Moat builders</div>
         <div class="rm-title">Defensible differentiators</div>
-        <div class="rm-items">AI UTM suggestion from link destination · Link health monitoring (alerts on broken destinations) · Bulk link importer from Bitly/TinyURL · GDPR/CCPA compliance dashboard · SSO (SAML) for enterprise</div>
+        <div class="rm-items">
+          AI UTM suggestion from link destination · Link health monitoring
+          (alerts on broken destinations) · Bulk link importer from
+          Bitly/TinyURL · GDPR/CCPA compliance dashboard · SSO (SAML) for
+          enterprise
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('section-' + id).classList.add('active');
-  event.target.classList.add('active');
-}
+  function showSection(id) {
+    document
+      .querySelectorAll(".section")
+      .forEach((s) => s.classList.remove("active"));
+    document
+      .querySelectorAll(".nav-btn")
+      .forEach((b) => b.classList.remove("active"));
+    document.getElementById("section-" + id).classList.add("active");
+    event.target.classList.add("active");
+  }
 </script>

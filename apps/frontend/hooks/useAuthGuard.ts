@@ -10,18 +10,21 @@ export function useAuthGuard() {
   const router = useRouter()
   const dispatch = useDispatch()
   const { accessToken, user } = useSelector((s: RootState) => s.auth)
-  // Skip the /me call if we already have the user object
-  const { data, error, isLoading } = useMeQuery(undefined, { skip: !accessToken || !!user })
+
+  const { data, error, isLoading } = useMeQuery(undefined, {
+    skip: !accessToken || !!user,
+  })
 
   useEffect(() => {
+    // No token at all → redirect immediately
     if (!accessToken) { router.replace('/login'); return }
     if (data?.user) dispatch(setUser(data.user))
     if (error) { dispatch(clearAuth()); router.replace('/login') }
   }, [accessToken, data, error, router, dispatch])
 
   const resolvedUser = user || data?.user || null
-  // loading = true only while we have a token but haven't resolved the user yet
-  const loading = !!accessToken && !resolvedUser && isLoading
+  // Show loading spinner while token exists but user not yet resolved
+  const loading = !!accessToken && !resolvedUser
 
   return { user: resolvedUser, loading }
 }

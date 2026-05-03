@@ -1,11 +1,11 @@
-# Urli — Deployment Guide
+# Urli - Deployment Guide
 
 ## Architecture
 
-| Service | URL |
-|---|---|
-| Backend API | https://api-urli.ideasprout.in |
-| Frontend | https://urli.ideasprout.in |
+| Service     | URL                                 |
+| ----------- | ----------------------------------- |
+| Backend API | https://api-urli.ideasprout.in      |
+| Frontend    | https://urli.ideasprout.in          |
 | Short links | https://urli.ideasprout.in/`<slug>` |
 
 ---
@@ -32,51 +32,58 @@ mkdir -p ~/urli
 Go to **Settings → Secrets and variables → Actions** and add:
 
 ### Infrastructure
-| Secret | Value |
-|---|---|
-| `EC2_IP` | Your EC2 public IP or domain |
-| `SSH_KEY` | Private key for `ubuntu` user (contents of `~/.ssh/id_rsa`) |
-| `GHCR_PAT` | GitHub Personal Access Token with `write:packages` scope |
+
+| Secret     | Value                                                       |
+| ---------- | ----------------------------------------------------------- |
+| `EC2_IP`   | Your EC2 public IP or domain                                |
+| `SSH_KEY`  | Private key for `ubuntu` user (contents of `~/.ssh/id_rsa`) |
+| `GHCR_PAT` | GitHub Personal Access Token with `write:packages` scope    |
 
 ### Database
-| Secret | Value |
-|---|---|
+
+| Secret              | Value                                    |
+| ------------------- | ---------------------------------------- |
 | `POSTGRES_PASSWORD` | Strong password for Postgres `urli` user |
 
 ### App Secrets
-| Secret | Value |
-|---|---|
-| `JWT_SECRET` | 32+ char random string |
+
+| Secret               | Value                                              |
+| -------------------- | -------------------------------------------------- |
+| `JWT_SECRET`         | 32+ char random string                             |
 | `JWT_REFRESH_SECRET` | 32+ char random string (different from JWT_SECRET) |
 
 ### Email (Gmail)
-| Secret | Value |
-|---|---|
-| `GMAIL_USER` | your@gmail.com |
+
+| Secret               | Value                      |
+| -------------------- | -------------------------- |
+| `GMAIL_USER`         | your@gmail.com             |
 | `GMAIL_APP_PASSWORD` | 16-char Gmail App Password |
-| `GMAIL_FROM` | `Urli <your@gmail.com>` |
+| `GMAIL_FROM`         | `Urli <your@gmail.com>`    |
 
 ### Razorpay
-| Secret | Value |
-|---|---|
-| `RAZORPAY_KEY_ID` | `rzp_live_xxxx` |
-| `RAZORPAY_KEY_SECRET` | Razorpay secret |
-| `RAZORPAY_WEBHOOK_SECRET` | Webhook secret from Razorpay dashboard |
-| `RAZORPAY_PRO_PLAN_ID` | `plan_xxxx` for Pro plan |
-| `RAZORPAY_BUSINESS_PLAN_ID` | `plan_xxxx` for Business plan |
+
+| Secret                      | Value                                  |
+| --------------------------- | -------------------------------------- |
+| `RAZORPAY_KEY_ID`           | `rzp_live_xxxx`                        |
+| `RAZORPAY_KEY_SECRET`       | Razorpay secret                        |
+| `RAZORPAY_WEBHOOK_SECRET`   | Webhook secret from Razorpay dashboard |
+| `RAZORPAY_PRO_PLAN_ID`      | `plan_xxxx` for Pro plan               |
+| `RAZORPAY_BUSINESS_PLAN_ID` | `plan_xxxx` for Business plan          |
 
 ### Google OAuth
-| Secret | Value |
-|---|---|
-| `GOOGLE_CLIENT_ID` | From Google Cloud Console |
+
+| Secret                 | Value                     |
+| ---------------------- | ------------------------- |
+| `GOOGLE_CLIENT_ID`     | From Google Cloud Console |
 | `GOOGLE_CLIENT_SECRET` | From Google Cloud Console |
 
 ### App URLs
-| Secret | Value |
-|---|---|
-| `SHORT_DOMAIN` | `urli.app` (your short link domain) |
-| `FRONTEND_URL` | `https://urli.app` |
-| `ADMIN_URL` | `https://admin.urli.app` |
+
+| Secret         | Value                                         |
+| -------------- | --------------------------------------------- |
+| `SHORT_DOMAIN` | `urli.ideasprout.in` (your short link domain) |
+| `FRONTEND_URL` | `https://urli.ideasprout.in`                  |
+| `ADMIN_URL`    | `https://admin.urli.ideasprout.in`            |
 
 ---
 
@@ -103,13 +110,14 @@ NEXT_PUBLIC_APP_URL=https://urli.ideasprout.in
    - Pushes to `ghcr.io/<owner>/urli-backend:latest`
    - SCPs `docker-compose.prod.yml` to EC2 `~/urli/`
    - SSHs into EC2, writes `.env`, pulls image, recreates only the `backend` container
-   - Postgres and Redis are **not** restarted — data is preserved
+   - Postgres and Redis are **not** restarted - data is preserved
 
 ## Razorpay Webhook
 
 Point Razorpay webhook to: `https://api-urli.ideasprout.in/subscriptions/webhook`
 
 Events to enable:
+
 - `subscription.activated`
 - `subscription.cancelled`
 - `subscription.expired`

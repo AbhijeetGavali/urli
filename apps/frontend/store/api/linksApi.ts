@@ -23,7 +23,7 @@ export const linksApi = api.injectEndpoints({
       invalidatesTags: ['Link', 'Analytics'],
     }),
     getQR: b.query<any, { linkId: string; format?: string }>({
-      query: ({ linkId, format = 'png' }) => `/qr/${linkId}?format=${format}`,
+      query: ({ linkId, format = 'png' }) => ({ url: `/qr/${linkId}`, params: { format } }),
     }),
   }),
 })

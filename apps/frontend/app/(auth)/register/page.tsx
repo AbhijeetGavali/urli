@@ -1,14 +1,15 @@
 "use client";
+import { extractError } from "@/lib/extractError";
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { useRegisterMutation } from "@/store/api/authApi";
 import { handleAuthSuccess, handleAuthError } from "../utils";
 import { Zap, Check } from "lucide-react";
 
 const PERKS = [
-  "30-day Pro trial - no credit card",
+  "Free for 30 days - no charge upfront",
   "Unlimited links after trial at ₹999/mo",
   "Deep analytics, pixels, QR codes",
   "Founder's pricing locked in forever",
@@ -16,6 +17,8 @@ const PERKS = [
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams?.get("returnTo") || undefined;
   const dispatch = useDispatch();
   const [register, { isLoading }] = useRegisterMutation();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -31,9 +34,9 @@ export default function RegisterPage() {
     setError("");
     try {
       const data = await register({ ...form, termsAccepted: true }).unwrap();
-      handleAuthSuccess(dispatch, data, router);
+      handleAuthSuccess(dispatch, data, router, returnTo);
     } catch (err: any) {
-      setError(err?.data?.error || "Registration failed");
+      setError(extractError(err));
       handleAuthError(dispatch, err);
     }
   };
@@ -187,7 +190,7 @@ export default function RegisterPage() {
           <p className="text-center text-sm text-gray-500 mt-6">
             Already have an account?{" "}
             <Link
-              href="/login"
+              href={`/login${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
               className="text-blue-600 font-medium hover:text-blue-700 transition-colors"
             >
               Sign in

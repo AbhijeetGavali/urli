@@ -2,9 +2,9 @@ import { AppDispatch } from '../../store'
 import { setCredentials } from '../../store/slices/authSlice'
 import { showToast } from '../../store/slices/uiSlice'
 
-export function handleAuthSuccess(dispatch: AppDispatch, data: any, router: any) {
+export function handleAuthSuccess(dispatch: AppDispatch, data: any, router: any, returnTo?: string) {
   dispatch(setCredentials({ user: data.user, accessToken: data.accessToken, refreshToken: data.refreshToken }))
-  router.push('/dashboard')
+  router.push(returnTo || '/dashboard')
 }
 
 export function handleAuthError(dispatch: AppDispatch, err: any) {

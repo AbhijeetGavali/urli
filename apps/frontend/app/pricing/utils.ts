@@ -26,7 +26,7 @@ export async function initiatePayment(opts: {
     key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
     subscription_id: opts.subscriptionId,
     name: "Urli",
-    description: `${opts.plan} Plan - 30-day free trial`,
+    description: `${opts.plan} Plan - 30-day free trial, then ₹${opts.plan === "PRO" ? "999" : "2,999"}/mo`,
     prefill: { name: opts.user?.name, email: opts.user?.email },
     theme: { color: "#2563eb" },
     handler: opts.onSuccess,

@@ -1,16 +1,43 @@
 import type { FastifyInstance } from "fastify";
 import { UAParser } from "ua-parser-js";
+import geoip from "geoip-lite";
 import { linkRepo } from "../repos/link.repo.js";
 import { clickRepo } from "../repos/click.repo.js";
 import { pixelRepo } from "../repos/misc.repo.js";
 import { redis, linkCacheKey, LINK_CACHE_TTL } from "../lib/redis.js";
 
+/** Append UTM params stored on the link to the destination URL */
+function buildDestination(link: any): string {
+  const utm: Record<string, string | undefined> = {
+    utm_source: link.utmSource,
+    utm_medium: link.utmMedium,
+    utm_campaign: link.utmCampaign,
+    utm_term: link.utmTerm,
+    utm_content: link.utmContent,
+  };
+  const params = Object.entries(utm)
+    .filter(([, v]) => v)
+    .map(([k, v]) => `${k}=${encodeURIComponent(v!)}`);
+
+  if (!params.length) return link.originalUrl;
+
+  const sep = link.originalUrl.includes("?") ? "&" : "?";
+  return `${link.originalUrl}${sep}${params.join("&")}`;
+}
+
+/** Resolve country from IP using local geoip-lite (no external HTTP call) */
+function resolveGeo(ip: string) {
+  try {
+    return geoip.lookup(ip);
+  } catch {
+    return null;
+  }
+}
+
 export async function redirectRoute(app: FastifyInstance) {
   app.get(
     "/:slug",
-    {
-      config: { rateLimit: { max: 60, timeWindow: "1 minute" } },
-    },
+    { config: { rateLimit: { max: 60, timeWindow: "1 minute" } } },
     async (req, reply) => {
       const { slug } = req.params as { slug: string };
 
@@ -33,20 +60,19 @@ export async function redirectRoute(app: FastifyInstance) {
         return reply.code(404).send({ error: "Link not found" });
 
       // Expiry check
-      if (link.expiresAt && new Date(link.expiresAt) < new Date()) {
+      if (link.expiresAt && new Date(link.expiresAt) < new Date())
         return reply.redirect(
           302,
           `${process.env.FRONTEND_URL}/expired?slug=${slug}`,
         );
-      }
-      if (link.maxClicks && link.clickCount >= link.maxClicks) {
-        return reply.redirect(
-          302,
-          `${process.env.FRONTEND_URL}/expired?slug=${slug}`,
-        );
-      }
 
-      // Parse request context
+      if (link.maxClicks && link.clickCount >= link.maxClicks)
+        return reply.redirect(
+          302,
+          `${process.env.FRONTEND_URL}/expired?slug=${slug}`,
+        );
+
+      // Parse UA
       const ua = req.headers["user-agent"] || "";
       const parser = new UAParser(ua);
       const device = parser.getDevice().type || "desktop";
@@ -56,42 +82,36 @@ export async function redirectRoute(app: FastifyInstance) {
         req.headers.referer || req.headers.referrer || "",
       );
       const ip = req.ip;
+      // In dev, req.ip is 127.0.0.1 - use a real public IP so geoip resolves
+      const resolvedIp =
+        ip === "127.0.0.1" ||
+        ip === "::1" ||
+        ip.startsWith("192.168.") ||
+        ip.startsWith("10.")
+          ? "103.21.244.0" // India (Mumbai) - change to your actual IP for accurate local testing
+          : ip;
 
-      // Geo lookup - needed for smart rules; also stored with click
-      let country = "",
-        city = "";
-      try {
-        const geo = (await fetch(
-          `http://ip-api.com/json/${ip}?fields=country,city,status`,
-        ).then((r) => r.json())) as any;
-        if (geo.status === "success") {
-          country = geo.country;
-          city = geo.city;
-        }
-      } catch {
-        /* geo optional */
-      }
+      // Geo lookup - local, synchronous, no external HTTP
+      const geoResult = resolveGeo(resolvedIp);
+      const country = geoResult?.country ?? "";
+      const city = (geoResult as any)?.city ?? "";
 
       // Smart rules (Business plan)
-      let destination = link.originalUrl;
+      let destination = buildDestination(link);
       if (link.smartRules?.length) {
         for (const rule of link.smartRules) {
-          if (rule.type === "device" && rule.value === device) {
-            destination = rule.destination;
-            break;
-          }
-          if (rule.type === "country" && rule.value === country) {
-            destination = rule.destination;
-            break;
-          }
-          if (rule.type === "os" && rule.value === os) {
+          if (
+            (rule.type === "device" && rule.value === device) ||
+            (rule.type === "country" && rule.value === country) ||
+            (rule.type === "os" && rule.value === os)
+          ) {
             destination = rule.destination;
             break;
           }
         }
       }
 
-      // Track click (fire-and-forget) - country/city already resolved above
+      // Track click fire-and-forget
       setImmediate(async () => {
         try {
           await Promise.all([

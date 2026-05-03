@@ -1,3 +1,4 @@
+import { extractError } from '@/lib/extractError'
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
@@ -21,7 +22,7 @@ export default function ResetPasswordPage() {
       dispatch(showToast({ message: 'Password reset! Please sign in.', type: 'success' }))
       router.push('/login')
     } catch (err: any) {
-      dispatch(showToast({ message: err?.data?.error || 'Reset failed', type: 'error' }))
+      dispatch(showToast({ message: extractError(err), type: 'error' }))
     }
   }
 

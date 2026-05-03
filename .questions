@@ -1,4 +1,4 @@
-# TinyURL SaaS — Open Questions
+# TinyURL SaaS - Open Questions
 
 ## Answered / Assumed
 - [x] Payment gateway → Razorpay (India-first)
@@ -7,7 +7,7 @@
 - [x] Short domain → configurable via SHORT_DOMAIN env var (default: snip.ly placeholder)
 - [x] Auth → JWT + Google OAuth
 - [x] Stack → Fastify + Prisma + Postgres + Redis + Next.js + Redux Toolkit
-- [x] Compliance → Privacy Policy, Terms of Use, Cookie Policy, Refund Policy, Account Deletion — all implemented
+- [x] Compliance → Privacy Policy, Terms of Use, Cookie Policy, Refund Policy, Account Deletion - all implemented
 - [x] Consent → termsAcceptedAt/privacyAcceptedAt stored in DB; checkbox required at registration
 - [x] GDPR → data export (GET /auth/export-data), account deletion (DELETE /auth/delete-account), right to erasure
 - [x] Indian IT Act 2000 / SPDI Rules 2011 → Grievance Officer named, 30-day response SLA, consent recorded
@@ -54,7 +54,7 @@
     - Default assumed: MDX files in frontend/content/blog/ for simplicity and SEO
     - MDX, each blog has table of content, 8 - 13 min read, rich copywritting, correct supporting img, rich title, auther, date
 
-11. **Analytics retention**: Free plan 30 days — should old clicks be deleted or just hidden?
+11. **Analytics retention**: Free plan 30 days - should old clicks be deleted or just hidden?
     - Default assumed: Hidden (soft filter), not deleted, for potential upsell
     - Do not delete anything
 

@@ -37,9 +37,17 @@ export const analyticsService = {
       link,
       total,
       planLimited: !!since,
-      byCountry: byCountry.map(r => ({ country: r.country || 'Unknown', count: r._count })),
-      byDevice: byDevice.map(r => ({ device: r.device || 'Unknown', count: r._count })),
-      byReferrer: byReferrer.map(r => ({ referrer: r.referrer || 'Direct', count: r._count })),
+      byCountry: byCountry
+        .filter(r => r.country)
+        .map(r => ({ country: r.country!, count: r._count }))
+        .sort((a, b) => b.count - a.count),
+      byDevice: byDevice
+        .filter(r => r.device)
+        .map(r => ({ device: r.device!, count: r._count }))
+        .sort((a, b) => b.count - a.count),
+      byReferrer: byReferrer
+        .map(r => ({ referrer: r.referrer || 'Direct', count: r._count }))
+        .sort((a, b) => b.count - a.count),
       daily: Object.entries(dailyMap).map(([date, count]) => ({ date, count })),
     }
   },

@@ -1,14 +1,14 @@
-# TinyURL SaaS — Project Context (Source of Truth)
+# TinyURL SaaS - Project Context (Source of Truth)
 
 ## Business Summary
 URL Shortener & Link Manager SaaS targeting the $1.1B market.
-Positioning: Full-featured at $15/mo — cheaper than Bitly Growth ($29), with features no competitor offers at this price.
+Positioning: Full-featured at $15/mo - cheaper than Bitly Growth ($29), with features no competitor offers at this price.
 Key differentiators: No ads ever, link expiry, retargeting pixels, UTM presets, link-in-bio, smart redirects.
 
 ## Pricing Tiers
-- Starter: Free — 50 links/mo, basic analytics 30 days, static QR
-- Pro: $15/mo — unlimited links, 1 custom domain, forever analytics, expiry, UTM, pixels, dynamic QR, Chrome ext, bio page, API
-- Business: $49/mo — everything Pro + 5 seats, 3 domains, smart redirects, workspaces, white-label QR, Zapier
+- Starter: Free - 50 links/mo, basic analytics 30 days, static QR
+- Pro: $15/mo - unlimited links, 1 custom domain, forever analytics, expiry, UTM, pixels, dynamic QR, Chrome ext, bio page, API
+- Business: $49/mo - everything Pro + 5 seats, 3 domains, smart redirects, workspaces, white-label QR, Zapier
 
 ## Tech Stack
 - Backend: Fastify + Prisma + PostgreSQL + Redis (Node.js 20)
@@ -90,7 +90,7 @@ hooks/            → custom hooks
 - utils.ts: formatters, validators, derived data logic
 - ALL API calls via RTK Query (store/api/)
 - ALL state via Redux Toolkit (store/slices/)
-- NO useState for server data — use RTK Query
+- NO useState for server data - use RTK Query
 - useState only for local UI state (modal open, form input)
 
 ## Monorepo Structure
@@ -129,7 +129,7 @@ hooks/            → custom hooks
 User, Link, Click, UTMTemplate, Workspace, WorkspaceMember, Subscription, ApiKey, BioPage, Pixel
 
 ## Redis Usage
-- link:{slug} → JSON (TTL 1hr) — redirect cache
+- link:{slug} → JSON (TTL 1hr) - redirect cache
 - rl:{ip} → rate limit counter
 - bl:{jti} → logout blacklist (TTL 15min)
 
@@ -139,7 +139,7 @@ User, Link, Click, UTMTemplate, Workspace, WorkspaceMember, Subscription, ApiKey
 - Templates: welcome, email-verify, password-reset
 
 ## Key Business Rules
-- 30-day free trial on Pro/Business — no credit card at signup
+- 30-day free trial on Pro/Business - no credit card at signup
 - Free plan: 50 links/mo hard limit, 30-day analytics retention
 - Pixels: Pro+ only | Smart redirects: Business only | Workspaces: Business only
 - API keys: Pro+ only
@@ -149,7 +149,7 @@ User, Link, Click, UTMTemplate, Workspace, WorkspaceMember, Subscription, ApiKey
 - 10 MDX blog posts in frontend/content/blog/
 - Landing page: OG tags, JSON-LD, sitemap.xml, robots.txt
 
-## Build Status — COMPLETE
+## Build Status - COMPLETE
 - [x] .context + .questions
 - [x] Prisma schema (all models with resetToken, verifyToken, emailVerified)
 - [x] docker-compose (postgres, redis, backend)
