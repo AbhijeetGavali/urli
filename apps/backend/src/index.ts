@@ -19,6 +19,8 @@ import {
   bioRoutes,
   adminRoutes,
   domainRoutes,
+  featureRequestRoutes,
+  bioTemplatePublicRoutes,
 } from "./routes/misc.js";
 
 const app = Fastify({ logger: true, trustProxy: true });
@@ -44,6 +46,8 @@ await app.register(apiKeyRoutes, { prefix: "/api-keys" });
 await app.register(bioRoutes, { prefix: "/bio" });
 await app.register(adminRoutes, { prefix: "/admin" });
 await app.register(domainRoutes, { prefix: "/domains" });
+await app.register(featureRequestRoutes, { prefix: "/feature-requests" });
+await app.register(bioTemplatePublicRoutes, { prefix: "/bio-templates" });
 await app.register(redirectRoute); // must be last - catches /:slug
 
 app.get("/health", async () => ({

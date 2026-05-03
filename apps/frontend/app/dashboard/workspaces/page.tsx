@@ -2,25 +2,37 @@
 import { extractError } from '@/lib/extractError'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useGetWorkspacesQuery, useCreateWorkspaceMutation, useRemoveMemberMutation } from '../../../store/api/miscApi'
+import {
+  useGetWorkspacesQuery,
+  useCreateWorkspaceMutation,
+  useAddMemberMutation,
+  useRemoveMemberMutation,
+} from '../../../store/api/miscApi'
 import { showToast } from '../../../store/slices/uiSlice'
 import type { RootState } from '../../../store'
 import Link from 'next/link'
-import { Plus, Users, X, Zap } from 'lucide-react'
+import { Plus, Users, X, Zap, UserPlus } from 'lucide-react'
 
+// Fix #2: match backend enum — ADMIN | EDITOR | VIEWER (not MEMBER)
 const ROLE_COLORS: Record<string, string> = {
-  OWNER: 'bg-violet-100 text-violet-700',
-  ADMIN: 'bg-blue-100 text-blue-700',
-  MEMBER: 'bg-gray-100 text-gray-600',
+  OWNER:  'bg-violet-100 text-violet-700',
+  ADMIN:  'bg-blue-100 text-blue-700',
+  EDITOR: 'bg-amber-100 text-amber-700',
+  VIEWER: 'bg-gray-100 text-gray-600',
 }
+const ASSIGNABLE_ROLES = ['ADMIN', 'EDITOR', 'VIEWER'] as const
 
 export default function WorkspacesPage() {
   const dispatch = useDispatch()
   const user = useSelector((s: RootState) => s.auth.user)
   const { data, isLoading } = useGetWorkspacesQuery()
   const [create, { isLoading: isCreating }] = useCreateWorkspaceMutation()
+  const [addMember, { isLoading: isAdding }] = useAddMemberMutation()
   const [removeMember] = useRemoveMemberMutation()
   const [name, setName] = useState('')
+  // Fix #1: track which workspace's invite form is open
+  const [inviteOpen, setInviteOpen] = useState<string | null>(null)
+  const [inviteForm, setInviteForm] = useState({ userId: '', role: 'VIEWER' as typeof ASSIGNABLE_ROLES[number] })
 
   if (user?.plan !== 'BUSINESS') {
     return (
@@ -53,6 +65,29 @@ export default function WorkspacesPage() {
     }
   }
 
+  // Fix #1: invite member handler
+  const handleInvite = async (workspaceId: string) => {
+    try {
+      await addMember({ workspaceId, userId: inviteForm.userId.trim(), role: inviteForm.role }).unwrap()
+      setInviteOpen(null)
+      setInviteForm({ userId: '', role: 'VIEWER' })
+      dispatch(showToast({ message: 'Member added!', type: 'success' }))
+    } catch (err: any) {
+      dispatch(showToast({ message: extractError(err), type: 'error' }))
+    }
+  }
+
+  // Fix #3: confirm before removing
+  const handleRemove = async (workspaceId: string, userId: string, displayName: string) => {
+    if (!confirm(`Remove ${displayName} from this workspace?`)) return
+    try {
+      await removeMember({ workspaceId, userId }).unwrap()
+      dispatch(showToast({ message: 'Member removed', type: 'success' }))
+    } catch (err: any) {
+      dispatch(showToast({ message: extractError(err), type: 'error' }))
+    }
+  }
+
   return (
     <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-4">
       <form onSubmit={handleCreate} className="flex gap-3">
@@ -78,13 +113,57 @@ export default function WorkspacesPage() {
         <div className="space-y-3">
           {data.workspaces.map((ws: any) => (
             <div key={ws.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+              {/* Header */}
               <div className="px-5 py-3.5 border-b border-gray-50 flex items-center gap-2.5">
                 <div className="w-7 h-7 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
                   <Users size={13} className="text-blue-500" />
                 </div>
                 <span className="font-semibold text-gray-900 text-sm">{ws.name}</span>
                 <span className="text-xs text-gray-400 ml-auto">{ws.members?.length || 0} members</span>
+                {/* Fix #1: invite button */}
+                <button
+                  onClick={() => { setInviteOpen(inviteOpen === ws.id ? null : ws.id); setInviteForm({ userId: '', role: 'VIEWER' }) }}
+                  className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium px-2.5 py-1.5 rounded-lg hover:bg-blue-50 transition-colors ml-2">
+                  <UserPlus size={12} /> Invite
+                </button>
               </div>
+
+              {/* Fix #1: inline invite form */}
+              {inviteOpen === ws.id && (
+                <div className="px-5 py-3 bg-blue-50/40 border-b border-blue-100 flex items-end gap-2 flex-wrap">
+                  <div className="flex-1 min-w-[160px]">
+                    <label className="block text-xs text-gray-500 mb-1">Email address</label>
+                    <input
+                      value={inviteForm.userId}
+                      onChange={e => setInviteForm(f => ({ ...f, userId: e.target.value }))}
+                      placeholder="user@example.com"
+                      type="email"
+                      className="input text-sm"
+                      autoFocus
+                    />
+                  </div>
+                  {/* Fix #2: only valid backend roles in dropdown */}
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-1">Role</label>
+                    <select value={inviteForm.role}
+                      onChange={e => setInviteForm(f => ({ ...f, role: e.target.value as any }))}
+                      className="input text-sm">
+                      {ASSIGNABLE_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                    </select>
+                  </div>
+                  <button onClick={() => handleInvite(ws.id)}
+                    disabled={isAdding || !inviteForm.userId.trim()}
+                    className="btn-primary text-sm py-2.5">
+                    {isAdding ? 'Adding…' : 'Add'}
+                  </button>
+                  <button onClick={() => setInviteOpen(null)}
+                    className="p-2.5 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+
+              {/* Member rows */}
               <div className="divide-y divide-gray-50">
                 {ws.members?.map((m: any) => (
                   <div key={m.userId} className="px-5 py-3 flex items-center justify-between group">
@@ -93,12 +172,15 @@ export default function WorkspacesPage() {
                         {(m.user?.name || m.userId)?.[0]?.toUpperCase()}
                       </div>
                       <span className="text-sm text-gray-800">{m.user?.name || m.userId}</span>
+                      {/* Fix #2: badge covers OWNER/ADMIN/EDITOR/VIEWER */}
                       <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${ROLE_COLORS[m.role] || 'bg-gray-100 text-gray-600'}`}>
                         {m.role}
                       </span>
                     </div>
                     {m.role !== 'OWNER' && (
-                      <button onClick={() => removeMember({ workspaceId: ws.id, userId: m.userId })}
+                      // Fix #3: confirm dialog before removal
+                      <button
+                        onClick={() => handleRemove(ws.id, m.userId, m.user?.name || m.userId)}
                         className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100">
                         <X size={13} />
                       </button>

@@ -10,7 +10,7 @@ export const adminApi = createApi({
       return headers
     },
   }),
-  tagTypes: ['Users', 'Stats'],
+  tagTypes: ['Users', 'Stats', 'FeatureRequests', 'BioTemplates'],
   endpoints: (b) => ({
     getStats: b.query<any, void>({
       query: () => '/admin/stats',
@@ -28,6 +28,32 @@ export const adminApi = createApi({
       query: ({ id, suspended }) => ({ url: `/admin/users/${id}/suspend`, method: 'POST', body: { suspended } }),
       invalidatesTags: ['Users'],
     }),
+    // Feature requests
+    getFeatureRequests: b.query<any, { status?: string; category?: string; page?: number }>({
+      query: (params) => ({ url: '/admin/feature-requests', params }),
+      providesTags: ['FeatureRequests'],
+    }),
+    updateFeatureRequest: b.mutation<any, { id: string; status?: string; adminNote?: string }>({
+      query: ({ id, ...data }) => ({ url: `/admin/feature-requests/${id}`, method: 'PATCH', body: data }),
+      invalidatesTags: ['FeatureRequests'],
+    }),
+    // Bio templates
+    getBioTemplates: b.query<any, { profession?: string }>({
+      query: (params) => ({ url: '/admin/bio-templates', params }),
+      providesTags: ['BioTemplates'],
+    }),
+    createBioTemplate: b.mutation<any, any>({
+      query: (body) => ({ url: '/admin/bio-templates', method: 'POST', body }),
+      invalidatesTags: ['BioTemplates'],
+    }),
+    updateBioTemplate: b.mutation<any, { id: string; data: any }>({
+      query: ({ id, data }) => ({ url: `/admin/bio-templates/${id}`, method: 'PATCH', body: data }),
+      invalidatesTags: ['BioTemplates'],
+    }),
+    deleteBioTemplate: b.mutation<any, string>({
+      query: (id) => ({ url: `/admin/bio-templates/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['BioTemplates'],
+    }),
   }),
 })
 
@@ -36,4 +62,10 @@ export const {
   useGetUsersQuery,
   useUpdateUserMutation,
   useSuspendUserMutation,
+  useGetFeatureRequestsQuery,
+  useUpdateFeatureRequestMutation,
+  useGetBioTemplatesQuery,
+  useCreateBioTemplateMutation,
+  useUpdateBioTemplateMutation,
+  useDeleteBioTemplateMutation,
 } = adminApi

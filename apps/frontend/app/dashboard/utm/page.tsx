@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useGetUTMTemplatesQuery, useCreateUTMTemplateMutation, useDeleteUTMTemplateMutation } from '../../../store/api/miscApi'
 import { showToast } from '../../../store/slices/uiSlice'
-import { Plus, Trash2, Tag, X } from 'lucide-react'
+import { Plus, Trash2, Tag, X, Copy } from 'lucide-react'
 
 const EMPTY = { name: '', source: '', medium: '', campaign: '', term: '', content: '' }
 const FIELDS = [
@@ -16,6 +16,18 @@ const FIELDS = [
   { key: 'content', label: 'utm_content', placeholder: 'banner_a' },
 ]
 
+/** Build a UTM query string preview from a template object */
+function buildUtmPreview(t: any): string {
+  const params = new URLSearchParams()
+  if (t.source)   params.set('utm_source', t.source)
+  if (t.medium)   params.set('utm_medium', t.medium)
+  if (t.campaign) params.set('utm_campaign', t.campaign)
+  if (t.term)     params.set('utm_term', t.term)
+  if (t.content)  params.set('utm_content', t.content)
+  const qs = params.toString()
+  return qs ? `?${qs}` : ''
+}
+
 export default function UTMPage() {
   const dispatch = useDispatch()
   const { data, isLoading } = useGetUTMTemplatesQuery()
@@ -23,6 +35,7 @@ export default function UTMPage() {
   const [del] = useDeleteUTMTemplateMutation()
   const [form, setForm] = useState(EMPTY)
   const [showForm, setShowForm] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,6 +46,19 @@ export default function UTMPage() {
     } catch (err: any) {
       dispatch(showToast({ message: extractError(err), type: 'error' }))
     }
+  }
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`Delete template "${name}"?`)) return
+    setDeletingId(id)
+    try { await del(id).unwrap() }
+    catch (err: any) { dispatch(showToast({ message: extractError(err), type: 'error' })) }
+    finally { setDeletingId(null) }
+  }
+
+  const handleCopyPreview = (t: any) => {
+    navigator.clipboard.writeText(buildUtmPreview(t))
+    dispatch(showToast({ message: 'UTM params copied!', type: 'success' }))
   }
 
   return (
@@ -60,11 +86,16 @@ export default function UTMPage() {
               </div>
             ))}
           </div>
-          <div className="flex gap-2 pt-1">
-            <button type="submit" disabled={isCreating} className="btn-primary">
-              {isCreating ? 'Saving…' : 'Save template'}
-            </button>
-          </div>
+          {/* Live preview of the UTM query string */}
+          {buildUtmPreview(form) && (
+            <div className="bg-gray-50 rounded-xl px-3 py-2 text-xs text-gray-500 font-mono break-all">
+              <span className="text-gray-400 mr-1">Preview:</span>
+              https://your-url.com/{buildUtmPreview(form)}
+            </div>
+          )}
+          <button type="submit" disabled={isCreating} className="btn-primary">
+            {isCreating ? 'Saving…' : 'Save template'}
+          </button>
         </form>
       )}
 
@@ -83,8 +114,8 @@ export default function UTMPage() {
         ) : (
           <div className="divide-y divide-gray-50">
             {data.templates.map((t: any) => (
-              <div key={t.id} className="px-5 py-4 flex items-center gap-4 hover:bg-gray-50/60 transition-colors group">
-                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
+              <div key={t.id} className="px-5 py-4 flex items-start gap-4 hover:bg-gray-50/60 transition-colors group">
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
                   <Tag size={14} className="text-blue-500" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -94,11 +125,26 @@ export default function UTMPage() {
                       .filter(([, v]) => v)
                       .map(([k, v]) => <span key={k}>{k}: <span className="text-gray-600">{v}</span></span>)}
                   </div>
+                  {/* UTM URL preview */}
+                  {buildUtmPreview(t) && (
+                    <div className="mt-1.5 text-[11px] text-gray-400 font-mono truncate max-w-sm">
+                      {buildUtmPreview(t)}
+                    </div>
+                  )}
                 </div>
-                <button onClick={() => del(t.id)} title="Delete"
-                  className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100">
-                  <Trash2 size={14} />
-                </button>
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                  {/* Copy UTM params */}
+                  <button onClick={() => handleCopyPreview(t)} title="Copy UTM params"
+                    className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                    <Copy size={13} />
+                  </button>
+                  {/* Delete with confirm */}
+                  <button onClick={() => handleDelete(t.id, t.name)} title="Delete"
+                    disabled={deletingId === t.id}
+                    className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-40">
+                    <Trash2 size={14} className={deletingId === t.id ? 'animate-pulse' : ''} />
+                  </button>
+                </div>
               </div>
             ))}
           </div>

@@ -3,7 +3,10 @@ import { prisma } from '../lib/prisma.js'
 export const workspaceRepo = {
   findById: (id: string) => prisma.workspace.findUnique({ where: { id }, include: { members: { include: { user: { select: { id: true, name: true, email: true, avatar: true } } } } } }),
   findByUser: (userId: string) =>
-    prisma.workspace.findMany({ where: { members: { some: { userId } } }, include: { members: true } }),
+    prisma.workspace.findMany({
+      where: { members: { some: { userId } } },
+      include: { members: { include: { user: { select: { id: true, name: true, email: true, avatar: true } } } } },
+    }),
   create: (data: any) => prisma.workspace.create({ data }),
   update: (id: string, data: any) => prisma.workspace.update({ where: { id }, data }),
   delete: (id: string) => prisma.workspace.delete({ where: { id } }),
@@ -46,4 +49,39 @@ export const bioRepo = {
   findBySlug: (slug: string) => prisma.bioPage.findUnique({ where: { slug } }),
   upsert: (userId: string, data: any) =>
     prisma.bioPage.upsert({ where: { userId }, create: { userId, ...data }, update: data }),
+  recordClick: (bioPageId: string, url: string, ip: string) =>
+    prisma.bioClick.create({ data: { bioPageId, url, ip } }),
+  getClicks: (bioPageId: string) =>
+    prisma.bioClick.findMany({ where: { bioPageId }, orderBy: { createdAt: 'desc' }, take: 500 }),
+}
+
+export const bioTemplateRepo = {
+  findAll: (profession?: string) =>
+    prisma.bioTemplate.findMany({
+      where: { isActive: true, ...(profession ? { profession: profession as any } : {}) },
+      orderBy: [{ profession: 'asc' }, { sortOrder: 'asc' }],
+    }),
+  findById: (id: string) => prisma.bioTemplate.findUnique({ where: { id } }),
+  create: (data: any) => prisma.bioTemplate.create({ data }),
+  update: (id: string, data: any) => prisma.bioTemplate.update({ where: { id }, data }),
+  delete: (id: string) => prisma.bioTemplate.delete({ where: { id } }),
+}
+
+export const featureRequestRepo = {
+  create: (data: any) => prisma.featureRequest.create({ data }),
+  findAll: (filters: { status?: string; category?: string; page: number; limit: number }) => {
+    const where: any = {}
+    if (filters.status) where.status = filters.status
+    if (filters.category) where.category = filters.category
+    const skip = (filters.page - 1) * filters.limit
+    return Promise.all([
+      prisma.featureRequest.findMany({
+        where, skip, take: filters.limit,
+        orderBy: { createdAt: 'desc' },
+        include: { user: { select: { id: true, name: true, email: true } } },
+      }),
+      prisma.featureRequest.count({ where }),
+    ])
+  },
+  update: (id: string, data: any) => prisma.featureRequest.update({ where: { id }, data }),
 }

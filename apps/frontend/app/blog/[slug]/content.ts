@@ -310,6 +310,246 @@ const posts: Record<string, string> = {
 
 <h2 id="advanced">Advanced: retargeting from newsletters</h2>
 <p>With Urli Pro, attach a Facebook pixel to your newsletter links. Everyone who clicks a link in your newsletter gets added to a Facebook retargeting audience. Run a follow-up ad 2 days later to this exact audience - people who already engaged with your content. Conversion rates on this audience are typically 3-5× higher than cold traffic.</p>`,
+
+  "utm-builder-guide": `
+<h2 id="what-are-utms">What UTM parameters actually are</h2>
+<p>UTM parameters are small tags you add to the end of a URL. They tell Google Analytics (and any other analytics tool) exactly where a visitor came from. Without them, GA4 lumps most of your traffic into "Direct" — a black hole that tells you nothing.</p>
+<p>Here's what a UTM-tagged link looks like:</p>
+<pre><code>https://yoursite.com/product?utm_source=instagram&utm_medium=social&utm_campaign=summer-sale</code></pre>
+<p>When someone clicks this link, GA4 records: source = instagram, medium = social, campaign = summer-sale. You now know exactly which campaign drove that visit.</p>
+<p>Without UTMs, that same visit shows up as "Direct" or gets misattributed to a previous session. You lose the data. You make worse decisions. You waste budget.</p>
+
+<h2 id="the-mess">Why most teams have broken attribution</h2>
+<p>Here's the painful truth: most marketing teams have completely broken UTM data. Not because they don't use UTMs — they do. The problem is inconsistency.</p>
+<p>Look at your GA4 source/medium report right now. You'll probably see:</p>
+<ul>
+<li>instagram, Instagram, INSTAGRAM — three separate sources that are actually the same</li>
+<li>email, Email, newsletter, e-mail — four ways to say the same thing</li>
+<li>social, social-media, social_media — inconsistent medium naming</li>
+</ul>
+<p>GA4 is case-sensitive. "Instagram" and "instagram" are different sources. Every inconsistency fragments your data. You can't compare campaigns. You can't see total Instagram performance. Your attribution is broken.</p>
+<p>This isn't a small problem. A mid-size e-commerce brand we spoke to had 47 different variations of "email" as a utm_source. Their email channel looked like 47 tiny channels instead of one large one. They were making budget decisions based on completely wrong data.</p>
+<blockquote><p>"We thought Instagram was our worst channel. Turns out we had 12 different utm_source values for Instagram. When we consolidated them, it became our #1 channel." — Priya S., Head of Growth</p></blockquote>
+
+<h2 id="five-params">The 5 UTM parameters explained</h2>
+<p>There are 5 standard UTM parameters. Three are essential; two are optional but useful.</p>
+<h3>utm_source (required)</h3>
+<p>Where the traffic comes from. Think of it as the platform or publisher. Examples: instagram, newsletter, google, facebook, twitter, linkedin.</p>
+<p><strong>Rule:</strong> Always lowercase. Never use spaces (use hyphens). Be specific — "instagram" not "social".</p>
+<h3>utm_medium (required)</h3>
+<p>The marketing channel type. Examples: social, email, cpc, organic, affiliate, referral.</p>
+<p><strong>Rule:</strong> Use GA4's standard medium names where possible. "cpc" for paid ads, "email" for email campaigns, "social" for organic social.</p>
+<h3>utm_campaign (required)</h3>
+<p>The specific campaign name. Examples: summer-sale-2025, product-launch-v2, weekly-newsletter-may.</p>
+<p><strong>Rule:</strong> Include the date or version number. "summer-sale" is ambiguous; "summer-sale-2025" is not.</p>
+<h3>utm_content (optional)</h3>
+<p>Differentiates between multiple links in the same campaign. Useful for A/B testing. Examples: hero-cta, sidebar-banner, footer-link.</p>
+<h3>utm_term (optional)</h3>
+<p>Originally for paid search keywords. Now used by some teams to track specific audience segments or ad variations.</p>
+
+<h2 id="naming-rules">Naming rules that scale across teams</h2>
+<p>The only way to fix broken attribution is to enforce naming conventions before links are created — not after. Here are the rules that work:</p>
+<ul>
+<li><strong>Always lowercase:</strong> instagram, not Instagram or INSTAGRAM</li>
+<li><strong>Hyphens, not spaces or underscores:</strong> summer-sale, not summer_sale or summer sale</li>
+<li><strong>Be specific on source, generic on medium:</strong> source=instagram, medium=social (not source=social)</li>
+<li><strong>Date your campaigns:</strong> campaign=product-launch-may-2025</li>
+<li><strong>Use a shared template:</strong> Everyone on the team uses the same UTM builder with pre-set values</li>
+</ul>
+<p>The last point is the most important. Individual discipline breaks down. A shared UTM template builder enforces consistency automatically.</p>
+
+<h2 id="utm-builder">Using a UTM builder to enforce consistency</h2>
+<p>A UTM builder is a tool that generates properly formatted UTM links from a form. The good ones let you save templates so your team always uses the same source/medium/campaign naming.</p>
+<p>Here's how to use Urli's UTM builder effectively:</p>
+<ol>
+<li>Go to Dashboard → UTM Builder</li>
+<li>Create a template for each recurring campaign type: "Instagram Posts", "Weekly Newsletter", "Google Ads"</li>
+<li>Each template pre-fills source, medium, and any standard campaign prefix</li>
+<li>When creating a new link, select the template and only fill in the campaign-specific part</li>
+<li>The tool generates a clean, consistently formatted UTM URL every time</li>
+</ol>
+<p>The result: every link your team creates follows the same naming convention. GA4 data is clean. Attribution is accurate. You can finally trust your reports.</p>
+<p>Urli also shortens the UTM URL automatically, so you get a clean branded link instead of a 200-character monster with UTM parameters hanging off the end.</p>
+
+<h2 id="ga4-check">Verifying your UTMs in GA4</h2>
+<p>After setting up UTM links, verify they're working correctly in GA4:</p>
+<ol>
+<li>Click your UTM-tagged link</li>
+<li>In GA4, go to Reports → Acquisition → Traffic Acquisition</li>
+<li>Look for your utm_source in the "Session source" column</li>
+<li>If it appears correctly, your UTMs are working</li>
+</ol>
+<p>Common issues to check:</p>
+<ul>
+<li><strong>Link shows as "Direct":</strong> The UTM parameters were stripped. Check if your redirect chain is removing them.</li>
+<li><strong>Source shows as "(not set)":</strong> The UTM parameters weren't included in the URL. Regenerate the link.</li>
+<li><strong>Data appears in wrong channel group:</strong> GA4 has default channel grouping rules. "social" medium maps to "Organic Social". "cpc" maps to "Paid Search". Use standard medium names.</li>
+</ul>
+<p>Once your UTMs are working correctly, you'll have clean, trustworthy attribution data. You'll know exactly which campaigns, channels, and content pieces drive traffic and conversions. You'll stop wasting budget on channels that don't work and double down on the ones that do.</p>`,
+
+  "pixel-retargeting-guide": `
+<h2 id="the-problem">Why you can't pixel third-party pages</h2>
+<p>Here's the problem every affiliate marketer, Amazon seller, and content creator runs into: you want to retarget people who showed interest in a product, but you can't put your Facebook or Google pixel on Amazon's website. You can't put it on Etsy. You can't put it on any third-party domain you don't control.</p>
+<p>So what happens? Someone clicks your affiliate link, visits the product page, doesn't buy — and you lose them forever. You can't show them a follow-up ad. You can't remind them about the product. You can't build a lookalike audience from your best clickers. The data just disappears.</p>
+<p>This is a massive missed opportunity. People who click a product link are warm leads. They showed intent. They're far more likely to convert than cold traffic. But without retargeting, you're treating them the same as someone who's never heard of you.</p>
+<blockquote><p>"I was sending 2,000 clicks a month to Amazon affiliate links and had zero retargeting data. When I started using pixel injection through short links, my Facebook retargeting audience grew by 8,000 people in 60 days." — Rahul M., Affiliate Marketer</p></blockquote>
+
+<h2 id="how-it-works">How pixel injection through short links works</h2>
+<p>The solution is elegant: instead of linking directly to Amazon (or any third-party URL), you link to a short URL that you control. When someone clicks your short link, two things happen simultaneously:</p>
+<ol>
+<li>Your pixel fires — adding the visitor to your retargeting audience</li>
+<li>The visitor is immediately redirected to the destination URL</li>
+</ol>
+<p>The redirect happens in milliseconds. The visitor never notices. But your pixel has fired, and that person is now in your retargeting audience on Facebook, Google, or both.</p>
+<p>This works for any destination URL: Amazon product pages, Etsy listings, affiliate links, competitor comparison pages, YouTube videos, podcast episodes. If you can shorten the link, you can pixel it.</p>
+
+<h2 id="facebook-setup">Setting up Facebook Pixel retargeting</h2>
+<p>Here's the complete setup for Facebook/Meta retargeting through short links:</p>
+<h3>Step 1: Get your Facebook Pixel ID</h3>
+<ol>
+<li>Go to Meta Business Manager → Events Manager</li>
+<li>Create a new pixel if you don't have one (it's free)</li>
+<li>Copy your Pixel ID — it's a 15-16 digit number like 1234567890123456</li>
+</ol>
+<h3>Step 2: Add your pixel to Urli</h3>
+<ol>
+<li>Go to Dashboard → Pixels</li>
+<li>Click "Add Pixel" → select Facebook</li>
+<li>Paste your Pixel ID and give it a name (e.g., "Main FB Pixel")</li>
+<li>Save</li>
+</ol>
+<h3>Step 3: Attach the pixel to your links</h3>
+<ol>
+<li>When creating or editing a short link, scroll to "Retargeting Pixels"</li>
+<li>Select your Facebook pixel</li>
+<li>Save the link</li>
+</ol>
+<p>Now every click on that link fires your Facebook pixel. The visitor is added to your "Website Visitors" audience in Meta Ads Manager automatically.</p>
+<h3>Step 4: Create a retargeting campaign</h3>
+<ol>
+<li>In Meta Ads Manager, create a new campaign</li>
+<li>Under Audience, select "Custom Audience" → "Website"</li>
+<li>Select your pixel and set the time window (7, 14, or 30 days)</li>
+<li>Create an ad specifically for this warm audience</li>
+</ol>
+<p>Your ad will now show to people who clicked your links — people who already showed interest. These audiences typically convert at 3-8× the rate of cold traffic.</p>
+
+<h2 id="google-setup">Setting up Google Ads retargeting</h2>
+<p>Google Ads retargeting works the same way, but uses a different pixel format:</p>
+<h3>Step 1: Get your Google Ads conversion tag</h3>
+<ol>
+<li>In Google Ads, go to Tools → Audience Manager → Your Data Sources</li>
+<li>Set up a Google Ads tag if you haven't already</li>
+<li>Your tag ID starts with "AW-" followed by numbers, like AW-1234567890</li>
+</ol>
+<h3>Step 2: Add to Urli</h3>
+<ol>
+<li>Dashboard → Pixels → Add Pixel → Google</li>
+<li>Enter your AW-XXXXXXXXXX tag ID</li>
+<li>Save and attach to your links</li>
+</ol>
+<p>Google's retargeting audience (called "Remarketing Lists") will populate as people click your links. You can then target these lists in Google Display, YouTube, and Search campaigns.</p>
+
+<h2 id="use-cases">Real use cases: affiliate, Amazon, bio links</h2>
+<h3>Affiliate marketers</h3>
+<p>You write a review of a product and link to it via an affiliate URL. Shorten the affiliate link with Urli and attach your pixel. Everyone who clicks your review link gets added to your retargeting audience. Run a follow-up ad 3 days later showing a discount or a comparison. Your affiliate commissions increase because you're re-engaging warm leads instead of letting them go cold.</p>
+<h3>Amazon sellers</h3>
+<p>You can't pixel Amazon's product pages. But you can pixel the link you share on social media, in your bio, or in your email. Create a short link to your Amazon listing, attach your pixel, and share that link everywhere. Build a retargeting audience of people who showed interest in your product. Run ads to them on Facebook and Instagram.</p>
+<h3>Bio page links</h3>
+<p>Your link-in-bio page is visited by your most engaged followers. Attach a pixel to every link on your bio page. Now you're building retargeting audiences from your Instagram, TikTok, and Twitter followers — people who are already fans. These are your highest-value ad audiences.</p>
+<h3>Content creators</h3>
+<p>You share a YouTube video link in your newsletter. Shorten it with a pixel attached. Everyone who clicks gets added to your retargeting audience. Run an ad to this audience promoting your course or product. They already know you — conversion rates are dramatically higher.</p>
+
+<h2 id="roi">What ROI to expect from link retargeting</h2>
+<p>Retargeting audiences built from link clicks are warm — they showed intent by clicking. Here's what to realistically expect:</p>
+<ul>
+<li><strong>Click-through rates:</strong> 2-5× higher than cold traffic campaigns</li>
+<li><strong>Conversion rates:</strong> 3-8× higher than cold traffic</li>
+<li><strong>Cost per acquisition:</strong> 40-70% lower than cold traffic</li>
+<li><strong>Audience build time:</strong> 30-90 days to build a meaningful audience (1,000+ people)</li>
+</ul>
+<p>The key is volume. You need enough link clicks to build a statistically significant retargeting audience. If you're getting fewer than 100 clicks per month, focus on growing your traffic first. Once you're at 500+ clicks/month, retargeting becomes highly effective.</p>
+<p>Start with a 14-day retargeting window. People who clicked in the last 14 days are still warm. Extend to 30 days as your audience grows. Don't go beyond 60 days — the audience gets too cold and your relevance score drops.</p>`,
+
+  "bio-page-linktree-alternative": `
+<h2 id="linktree-problem">The real cost of Linktree</h2>
+<p>Linktree is the default choice for link-in-bio pages. It's also a trap. Here's what you're actually paying for:</p>
+<ul>
+<li><strong>Linktree Free:</strong> Unlimited links, but Linktree's branding on your page, no custom domain, no analytics per link, no custom themes</li>
+<li><strong>Linktree Starter (₹400/mo):</strong> Remove Linktree branding, basic analytics, 6 themes</li>
+<li><strong>Linktree Pro (₹750/mo):</strong> Custom domain, per-link analytics, more themes, scheduling</li>
+<li><strong>Linktree Premium (₹2,400/mo):</strong> Priority support, advanced analytics</li>
+</ul>
+<p>At ₹750/mo, you're paying for a single page with links on it. No URL shortener. No UTM builder. No retargeting pixels. Just a page with links.</p>
+<p>The deeper problem is ownership. Your Linktree page lives at linktr.ee/yourname. If Linktree shuts down, changes pricing, or gets acquired, your link-in-bio disappears. Every piece of content you've ever shared with that link breaks. Your Instagram bio link stops working. Your TikTok bio link stops working. You lose your entire link history.</p>
+<blockquote><p>"I had 3 years of Instagram posts all pointing to my Linktree. When I finally switched to my own domain, I realized I'd been building on rented land the whole time." — Meera K., Lifestyle Creator</p></blockquote>
+
+<h2 id="what-you-lose">What you lose by using Linktree</h2>
+<p>Beyond the pricing, there are real functional gaps in Linktree that hurt your growth:</p>
+<h3>No per-link click analytics on the free plan</h3>
+<p>You can see total page views, but you can't see which specific links get clicked. This means you don't know if your "Shop Now" link or your "Latest Video" link drives more engagement. You're flying blind on what your audience actually wants.</p>
+<h3>No retargeting pixels</h3>
+<p>Every person who visits your Linktree page is a warm lead — they came from your social profile, they're interested in you. But you can't pixel them. You can't run retargeting ads to your bio page visitors. That audience is wasted.</p>
+<h3>No UTM tracking</h3>
+<p>When someone clicks a link on your Linktree, you can't automatically add UTM parameters. Your GA4 shows the traffic as "Direct" instead of "linktree / referral". You lose attribution data.</p>
+<h3>Their branding, not yours</h3>
+<p>Even on paid plans, "Made with Linktree" appears on your page. You're advertising their product to your audience. Every follower who visits your bio page sees Linktree's brand, not yours.</p>
+
+<h2 id="what-good-looks-like">What a great bio page actually needs</h2>
+<p>A bio page that actually works for your audience needs:</p>
+<ul>
+<li><strong>Your own domain or subdomain:</strong> bio.yourbrand.com, not linktr.ee/yourbrand</li>
+<li><strong>Per-link analytics:</strong> Know which links your audience clicks most</li>
+<li><strong>Retargeting pixels:</strong> Build ad audiences from your bio page visitors</li>
+<li><strong>Custom sections:</strong> Not just links — headings, text blocks, social icons, images</li>
+<li><strong>Multiple templates:</strong> A creator's bio page should look different from a business's</li>
+<li><strong>No third-party branding:</strong> Your page, your brand</li>
+<li><strong>Fast loading:</strong> Every second of load time costs you followers</li>
+</ul>
+
+<h2 id="templates">Choosing the right template for your audience</h2>
+<p>The visual design of your bio page signals who you are before anyone reads a word. Here's how to choose:</p>
+<h3>Minimal — for professionals and consultants</h3>
+<p>Clean white background, simple typography, subtle borders. Signals: trustworthy, professional, no-nonsense. Best for: consultants, lawyers, accountants, B2B service providers.</p>
+<h3>Bold — for creators and entertainers</h3>
+<p>Dark background, yellow accent buttons, heavy typography. Signals: confident, high-energy, memorable. Best for: musicians, athletes, comedians, YouTubers.</p>
+<h3>Creator — for influencers and coaches</h3>
+<p>Warm gradient (orange to pink), rounded buttons, friendly feel. Signals: approachable, warm, personal. Best for: lifestyle influencers, coaches, bloggers, fitness creators.</p>
+<h3>Business — for brands and agencies</h3>
+<p>Deep blue gradient, white buttons, corporate feel. Signals: established, trustworthy, professional. Best for: agencies, SaaS companies, B2B brands.</p>
+<h3>Dark — for developers and designers</h3>
+<p>Slate dark mode, subtle borders. Signals: technical, modern, understated. Best for: developers, designers, product people.</p>
+<h3>Neon — for artists and DJs</h3>
+<p>Black background, purple neon accents, glowing effects. Signals: creative, edgy, futuristic. Best for: DJs, digital artists, NFT creators, gaming streamers.</p>
+
+<h2 id="sections">Using sections to build a richer bio page</h2>
+<p>A list of links is the minimum viable bio page. A great bio page uses sections to tell a story and guide your audience to the right action.</p>
+<p>Here's how to think about sections:</p>
+<h3>Links section</h3>
+<p>Your primary calls to action. Keep it to 5-7 links maximum. More than that and people don't click anything. Order them by priority — most important link first.</p>
+<h3>Heading section</h3>
+<p>Use headings to organize your links into categories. "My Content", "Work With Me", "Shop". This helps visitors find what they're looking for faster.</p>
+<h3>Text section</h3>
+<p>A short paragraph about what you do or a current offer. Keep it to 2-3 sentences. This is not your full bio — it's a hook.</p>
+<h3>Social icons section</h3>
+<p>Link to all your social profiles in a compact row of icons. Lets visitors follow you on their preferred platform without cluttering your main links.</p>
+<h3>Image section</h3>
+<p>A product photo, a recent project, or a promotional banner. Images increase engagement and make your page feel more alive than a plain list of links.</p>
+<h3>Divider section</h3>
+<p>A simple horizontal line to visually separate sections. Small detail, big impact on readability.</p>
+
+<h2 id="setup">Setting up your bio page in 5 minutes</h2>
+<ol>
+<li><strong>Go to Dashboard → Bio Page</strong> in Urli</li>
+<li><strong>Set your slug</strong> — this becomes urli.ideasprout.in/b/yourname (or your custom domain)</li>
+<li><strong>Add your name and bio</strong> — keep the bio to one sentence</li>
+<li><strong>Choose a template</strong> in the Design tab — pick the one that matches your brand</li>
+<li><strong>Add sections</strong> — start with a Links section, then add a Social section</li>
+<li><strong>Save as draft</strong> — free users can build and preview</li>
+<li><strong>Upgrade to Pro and publish</strong> — your page goes live at your URL</li>
+</ol>
+<p>Update your Instagram, TikTok, Twitter, and YouTube bio links to point to your new page. You now own your link-in-bio. No third-party branding. No dependency on Linktree's pricing decisions. No risk of your link history disappearing.</p>
+<p>And because your bio page is part of Urli, every link on it can have retargeting pixels attached. Every click builds your ad audience. Your bio page becomes a growth engine, not just a list of links.</p>`,
 };
 
 export function getPostContent(slug: string): string {

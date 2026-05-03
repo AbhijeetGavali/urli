@@ -68,6 +68,7 @@ model User {
   bioPage         BioPage?
   pixels          Pixel[]
   customDomains   CustomDomain[]
+  featureRequests FeatureRequest[]
 }
 
 model Link {
@@ -189,21 +190,113 @@ model ApiKey {
   @@index([key])
 }
 
-model BioPage {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  slug        String   @unique
-  title       String
-  description String?
-  avatar      String?
-  links       Json     @default("[]")
-  theme       String   @default("default")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+enum Profession {
+  CREATOR
+  DESIGNER
+  BARBER
+  DOCTOR
+  HOME_BUSINESS
+  CONTRACTOR
+  RESTAURANT
+  CHEF
+  FITNESS
+  MUSICIAN
+}
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+enum FeatureRequestCategory {
+  NEW_SECTION_TYPE
+  NEW_VARIANT
+  NEW_PROFESSION
+  CUSTOMIZATION_OPTION
+  BUG
+  OTHER
+}
+
+enum FeatureRequestStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  PLANNED
+  COMPLETED
+  DECLINED
+}
+
+model BioPage {
+  id                  String     @id @default(cuid())
+  userId              String     @unique
+  slug                String     @unique
+  title               String
+  description         String?
+  avatar              String?
+  links               Json       @default("[]")
+  theme               String     @default("default")
+  template            String     @default("minimal")
+  profession          Profession @default(CREATOR)
+  sections            Json       @default("[]")
+  globalStyles        Json       @default("{}")
+  published           Boolean    @default(false)
+  isPasswordProtected Boolean    @default(false)
+  passwordHash        String?
+  seoTitle            String?
+  seoDescription      String?
+  ogImage             String?
+  versionHistory      Json       @default("[]")
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clicks          BioClick[]
+  featureRequests FeatureRequest[]
 
   @@index([slug])
+}
+
+model BioClick {
+  id        String   @id @default(cuid())
+  bioPageId String
+  url       String
+  ip        String?
+  createdAt DateTime @default(now())
+
+  bioPage BioPage @relation(fields: [bioPageId], references: [id], onDelete: Cascade)
+
+  @@index([bioPageId])
+  @@index([createdAt])
+}
+
+model BioTemplate {
+  id          String     @id @default(cuid())
+  profession  Profession
+  variantName String
+  description String?
+  thumbnail   String?
+  config      Json
+  isActive    Boolean    @default(true)
+  sortOrder   Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([profession])
+}
+
+model FeatureRequest {
+  id          String                 @id @default(cuid())
+  userId      String
+  bioPageId   String?
+  context     String?
+  description String
+  category    FeatureRequestCategory @default(OTHER)
+  status      FeatureRequestStatus   @default(SUBMITTED)
+  isBlocking  Boolean                @default(false)
+  upvotes     Int                    @default(0)
+  adminNote   String?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bioPage BioPage? @relation(fields: [bioPageId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([userId])
 }
 
 model Pixel {

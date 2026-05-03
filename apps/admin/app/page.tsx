@@ -5,6 +5,12 @@ import {
   useGetUsersQuery,
   useUpdateUserMutation,
   useSuspendUserMutation,
+  useGetFeatureRequestsQuery,
+  useUpdateFeatureRequestMutation,
+  useGetBioTemplatesQuery,
+  useCreateBioTemplateMutation,
+  useUpdateBioTemplateMutation,
+  useDeleteBioTemplateMutation,
 } from "../store/adminApi";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
@@ -100,6 +106,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 }
 
 function AdminDashboard() {
+  const [activeTab, setActiveTab] = useState<'users' | 'feature-requests' | 'bio-templates'>('users');
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const { data: stats } = useGetStatsQuery();
@@ -192,7 +199,24 @@ function AdminDashboard() {
           ))}
         </div>
 
-        {/* Users table */}
+        {/* Tab bar */}
+        <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+          {([
+            { id: 'users', label: 'Users' },
+            { id: 'feature-requests', label: 'Feature Requests' },
+            { id: 'bio-templates', label: 'Bio Templates' },
+          ] as const).map(t => (
+            <button key={t.id} onClick={() => setActiveTab(t.id)}
+              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeTab === t.id ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === 'feature-requests' && <FeatureRequestsTab />}
+        {activeTab === 'bio-templates' && <BioTemplatesTab />}
+
+        {activeTab === 'users' && (
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-4">
             <h2 className="font-semibold text-gray-900">Users</h2>
@@ -379,6 +403,189 @@ function AdminDashboard() {
             </div>
           )}
         </div>
+        )} {/* end activeTab === 'users' */}
+      </div>
+    </div>
+  );
+}
+
+const STATUS_COLORS: Record<string, string> = {
+  SUBMITTED:    'bg-gray-100 text-gray-600',
+  UNDER_REVIEW: 'bg-blue-100 text-blue-700',
+  PLANNED:      'bg-violet-100 text-violet-700',
+  COMPLETED:    'bg-green-100 text-green-700',
+  DECLINED:     'bg-red-100 text-red-600',
+};
+
+function FeatureRequestsTab() {
+  const [statusFilter, setStatusFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const { data, isLoading } = useGetFeatureRequestsQuery({ status: statusFilter || undefined, category: categoryFilter || undefined });
+  const [update] = useUpdateFeatureRequestMutation();
+  const requests = data?.requests ?? [];
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3 flex-wrap">
+        <h2 className="font-semibold text-gray-900 flex-1">Feature Requests</h2>
+        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+          className="text-xs border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none bg-white">
+          <option value="">All statuses</option>
+          {['SUBMITTED','UNDER_REVIEW','PLANNED','COMPLETED','DECLINED'].map(s => (
+            <option key={s} value={s}>{s.replace('_', ' ')}</option>
+          ))}
+        </select>
+        <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}
+          className="text-xs border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none bg-white">
+          <option value="">All categories</option>
+          {['NEW_SECTION_TYPE','NEW_VARIANT','NEW_PROFESSION','CUSTOMIZATION_OPTION','BUG','OTHER'].map(c => (
+            <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>
+          ))}
+        </select>
+      </div>
+      {isLoading ? (
+        <div className="p-12 text-center"><div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" /></div>
+      ) : requests.length === 0 ? (
+        <div className="p-12 text-center text-sm text-gray-400">No feature requests yet.</div>
+      ) : (
+        <div className="divide-y divide-gray-50">
+          {requests.map((r: any) => (
+            <div key={r.id} className="px-6 py-4 hover:bg-gray-50/50 transition-colors">
+              <div className="flex items-start gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${STATUS_COLORS[r.status]}`}>{r.status.replace('_',' ')}</span>
+                    <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{r.category.replace(/_/g,' ')}</span>
+                    {r.isBlocking && <span className="text-[10px] text-red-600 bg-red-50 px-2 py-0.5 rounded-full font-semibold">Blocking</span>}
+                  </div>
+                  <p className="text-sm text-gray-800 leading-relaxed">{r.description}</p>
+                  {r.context && <p className="text-xs text-gray-400 mt-1">Context: {r.context}</p>}
+                  <p className="text-xs text-gray-400 mt-1">{r.user?.name} · {r.user?.email} · {new Date(r.createdAt).toLocaleDateString('en-IN')}</p>
+                  {r.adminNote && <p className="text-xs text-blue-600 mt-1 italic">Note: {r.adminNote}</p>}
+                </div>
+                <div className="flex flex-col gap-1.5 shrink-0">
+                  <select value={r.status}
+                    onChange={e => update({ id: r.id, status: e.target.value })}
+                    className="text-xs border border-gray-200 rounded-lg px-2 py-1 focus:outline-none bg-white">
+                    {['SUBMITTED','UNDER_REVIEW','PLANNED','COMPLETED','DECLINED'].map(s => (
+                      <option key={s} value={s}>{s.replace('_',' ')}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const PROFESSIONS_ADMIN = ['CREATOR','DESIGNER','BARBER','DOCTOR','HOME_BUSINESS','CONTRACTOR','RESTAURANT','CHEF','FITNESS','MUSICIAN'];
+
+function BioTemplatesTab() {
+  const [profFilter, setProfFilter] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ profession: 'CREATOR', variantName: '', description: '', thumbnail: '', config: '{}', sortOrder: 0 });
+  const { data, isLoading } = useGetBioTemplatesQuery({ profession: profFilter || undefined });
+  const [create] = useCreateBioTemplateMutation();
+  const [del] = useDeleteBioTemplateMutation();
+  const [updateTpl] = useUpdateBioTemplateMutation();
+  const templates = data?.templates ?? [];
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await create({ ...form, config: JSON.parse(form.config || '{}'), sortOrder: Number(form.sortOrder) }).unwrap();
+      setShowForm(false);
+      setForm({ profession: 'CREATOR', variantName: '', description: '', thumbnail: '', config: '{}', sortOrder: 0 });
+    } catch {}
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-3 flex-wrap">
+          <h2 className="font-semibold text-gray-900 flex-1">Bio Templates</h2>
+          <select value={profFilter} onChange={e => setProfFilter(e.target.value)}
+            className="text-xs border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none bg-white">
+            <option value="">All professions</option>
+            {PROFESSIONS_ADMIN.map(p => <option key={p} value={p}>{p.replace('_',' ')}</option>)}
+          </select>
+          <button onClick={() => setShowForm(s => !s)}
+            className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            {showForm ? 'Cancel' : '+ Add template'}
+          </button>
+        </div>
+
+        {showForm && (
+          <form onSubmit={handleCreate} className="px-6 py-4 border-b border-gray-100 bg-gray-50 grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Profession</label>
+              <select value={form.profession} onChange={e => setForm(f => ({ ...f, profession: e.target.value }))}
+                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none bg-white">
+                {PROFESSIONS_ADMIN.map(p => <option key={p} value={p}>{p.replace('_',' ')}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Variant name</label>
+              <input value={form.variantName} onChange={e => setForm(f => ({ ...f, variantName: e.target.value }))} required
+                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none" placeholder="e.g. Sharp Fade" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+              <input value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none" placeholder="Short description" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Thumbnail URL</label>
+              <input value={form.thumbnail} onChange={e => setForm(f => ({ ...f, thumbnail: e.target.value }))}
+                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none" placeholder="https://…" />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Config JSON</label>
+              <textarea value={form.config} onChange={e => setForm(f => ({ ...f, config: e.target.value }))} rows={3}
+                className="w-full text-xs font-mono border border-gray-200 rounded-lg px-3 py-2 focus:outline-none resize-none" />
+            </div>
+            <div className="col-span-2 flex justify-end">
+              <button type="submit" className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                Save template
+              </button>
+            </div>
+          </form>
+        )}
+
+        {isLoading ? (
+          <div className="p-12 text-center"><div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" /></div>
+        ) : templates.length === 0 ? (
+          <div className="p-12 text-center text-sm text-gray-400">No templates yet. Add one above.</div>
+        ) : (
+          <div className="divide-y divide-gray-50">
+            {templates.map((t: any) => (
+              <div key={t.id} className="px-6 py-4 flex items-center gap-4 hover:bg-gray-50/50 transition-colors group">
+                {t.thumbnail && <img src={t.thumbnail} alt={t.variantName} className="w-12 h-12 rounded-lg object-cover shrink-0 border border-gray-100" />}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-gray-900">{t.variantName}</span>
+                    <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{t.profession.replace('_',' ')}</span>
+                    {!t.isActive && <span className="text-[10px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full">Inactive</span>}
+                  </div>
+                  {t.description && <p className="text-xs text-gray-400 mt-0.5">{t.description}</p>}
+                </div>
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button onClick={() => updateTpl({ id: t.id, data: { isActive: !t.isActive } })}
+                    className="text-xs px-2.5 py-1 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 transition-colors">
+                    {t.isActive ? 'Deactivate' : 'Activate'}
+                  </button>
+                  <button onClick={() => del(t.id)}
+                    className="text-xs px-2.5 py-1 rounded-lg border border-red-100 text-red-500 hover:bg-red-50 transition-colors">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

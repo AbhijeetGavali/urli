@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify'
-import { qrController, utmController, pixelController, workspaceController, apiKeyController, bioController, adminController } from '../controllers/misc.controller.js'
+import { qrController, utmController, pixelController, workspaceController, apiKeyController, bioController, adminController, bioTemplateController, featureRequestController } from '../controllers/misc.controller.js'
 import { domainController } from '../controllers/domain.controller.js'
 import { authenticate, requireAdmin } from '../lib/auth.js'
 
@@ -39,6 +39,8 @@ export async function apiKeyRoutes(app: FastifyInstance) {
 
 export async function bioRoutes(app: FastifyInstance) {
   app.get('/public/:slug', bioController.getPublic)
+  app.get('/click', bioController.trackClick)
+  app.get('/check-slug/:slug', { preHandler: authenticate }, bioController.checkSlug)
   app.get('/', { preHandler: authenticate }, bioController.get)
   app.put('/', { preHandler: authenticate }, bioController.upsert)
 }
@@ -48,6 +50,24 @@ export async function adminRoutes(app: FastifyInstance) {
   app.get('/stats', adminController.getStats)
   app.get('/users', adminController.getUsers)
   app.patch('/users/:id', adminController.updateUser)
+  // Bio templates (admin CRUD)
+  app.get('/bio-templates', bioTemplateController.list)
+  app.post('/bio-templates', bioTemplateController.create)
+  app.patch('/bio-templates/:id', bioTemplateController.update)
+  app.delete('/bio-templates/:id', bioTemplateController.delete)
+  // Feature requests (admin list + update)
+  app.get('/feature-requests', featureRequestController.list)
+  app.patch('/feature-requests/:id', featureRequestController.update)
+}
+
+export async function featureRequestRoutes(app: FastifyInstance) {
+  app.addHook('preHandler', authenticate)
+  app.post('/', featureRequestController.create)
+}
+
+// Public bio template list (for template picker)
+export async function bioTemplatePublicRoutes(app: FastifyInstance) {
+  app.get('/', bioTemplateController.list)
 }
 
 export async function domainRoutes(app: FastifyInstance) {

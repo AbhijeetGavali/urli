@@ -243,6 +243,87 @@ export const POSTS: Post[] = [
     ],
   },
   {
+    slug: "utm-builder-guide",
+    title: "The Only UTM Builder Guide You'll Ever Need (Stop Guessing Where Your Traffic Comes From)",
+    description:
+      "Most marketers use UTM parameters wrong — inconsistent naming, missing fields, and no templates. Here's the complete guide to building UTM links that give you clean, trustworthy attribution data in GA4.",
+    date: "May 3, 2025",
+    readTime: "9 min read",
+    category: "Marketing",
+    keywords: [
+      "utm builder",
+      "utm link generator",
+      "utm parameters explained",
+      "utm tracking google analytics",
+      "utm builder free tool",
+    ],
+    author: AUTHOR,
+    coverImage:
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80&auto=format&fit=crop",
+    toc: [
+      { id: "what-are-utms", title: "What UTM parameters actually are" },
+      { id: "the-mess", title: "Why most teams have broken attribution" },
+      { id: "five-params", title: "The 5 UTM parameters explained" },
+      { id: "naming-rules", title: "Naming rules that scale across teams" },
+      { id: "utm-builder", title: "Using a UTM builder to enforce consistency" },
+      { id: "ga4-check", title: "Verifying your UTMs in GA4" },
+    ],
+  },
+  {
+    slug: "pixel-retargeting-guide",
+    title: "How to Retarget Anyone Who Clicks Your Links (Even Amazon, Affiliate & Bio Links)",
+    description:
+      "You can't put a Facebook or Google pixel on Amazon's domain. But you can fire it from your short link — so every click builds your retargeting audience automatically. Here's the complete setup guide.",
+    date: "May 3, 2025",
+    readTime: "10 min read",
+    category: "Marketing",
+    keywords: [
+      "pixel retargeting",
+      "retargeting pixel url shortener",
+      "facebook pixel affiliate link",
+      "retarget link clicks",
+      "google ads retargeting short link",
+    ],
+    author: AUTHOR,
+    coverImage:
+      "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=1200&q=80&auto=format&fit=crop",
+    toc: [
+      { id: "the-problem", title: "Why you can't pixel third-party pages" },
+      { id: "how-it-works", title: "How pixel injection through short links works" },
+      { id: "facebook-setup", title: "Setting up Facebook Pixel retargeting" },
+      { id: "google-setup", title: "Setting up Google Ads retargeting" },
+      { id: "use-cases", title: "Real use cases: affiliate, Amazon, bio links" },
+      { id: "roi", title: "What ROI to expect from link retargeting" },
+    ],
+  },
+  {
+    slug: "bio-page-linktree-alternative",
+    title: "Why Your Linktree Bio Page Is Costing You Followers (And What to Use Instead)",
+    description:
+      "Linktree charges ₹750/mo for a page with their branding on it, no analytics per link, and no custom domain. Here's how to build a better link-in-bio page that you actually own — for free.",
+    date: "May 3, 2025",
+    readTime: "8 min read",
+    category: "Comparisons",
+    keywords: [
+      "linktree alternative",
+      "link in bio page",
+      "free linktree alternative",
+      "bio page own domain",
+      "linktree vs alternatives 2025",
+    ],
+    author: AUTHOR,
+    coverImage:
+      "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=1200&q=80&auto=format&fit=crop",
+    toc: [
+      { id: "linktree-problem", title: "The real cost of Linktree" },
+      { id: "what-you-lose", title: "What you lose by using Linktree" },
+      { id: "what-good-looks-like", title: "What a great bio page actually needs" },
+      { id: "templates", title: "Choosing the right template for your audience" },
+      { id: "sections", title: "Using sections to build a richer bio page" },
+      { id: "setup", title: "Setting up your bio page in 5 minutes" },
+    ],
+  },
+  {
     slug: "qr-code-generator-dynamic",
     title:
       "Printed QR Codes That You Can Edit Later - How Dynamic QR Codes Work",

@@ -2,7 +2,12 @@
 import { extractError } from '@/lib/extractError'
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetPixelsQuery, useCreatePixelMutation, useDeletePixelMutation, useLazyVerifyPixelQuery } from "../../../store/api/miscApi";
+import {
+  useGetPixelsQuery,
+  useCreatePixelMutation,
+  useDeletePixelMutation,
+  useLazyVerifyPixelQuery,
+} from "../../../store/api/miscApi";
 import { showToast } from "../../../store/slices/uiSlice";
 import type { RootState } from "../../../store";
 import Link from "next/link";
@@ -14,14 +19,21 @@ const PIXEL_COLORS: Record<string, string> = {
   GOOGLE: "bg-red-100 text-red-600",
 };
 
+// Fix #4: format hints shown below the Pixel ID input
+const PIXEL_ID_HINTS: Record<string, string> = {
+  FACEBOOK: "Numeric only — e.g. 1234567890",
+  GOOGLE: "Must start with AW- — e.g. AW-123456789",
+};
+
 export default function PixelsPage() {
   const dispatch = useDispatch();
   const user = useSelector((s: RootState) => s.auth.user);
   const { data, isLoading } = useGetPixelsQuery();
   const [create, { isLoading: isCreating }] = useCreatePixelMutation();
-  const [del] = useDeletePixelMutation();
+  const [del, { isLoading: isDeleting }] = useDeletePixelMutation(); // Fix #5: track isDeleting
   const [verifyPixel, { isFetching: isVerifying }] = useLazyVerifyPixelQuery();
   const [verifiedId, setVerifiedId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null); // Fix #5: track which row
   const [form, setForm] = useState({ name: "", type: "FACEBOOK", pixelId: "" });
   const [showForm, setShowForm] = useState(false);
 
@@ -33,6 +45,18 @@ export default function PixelsPage() {
       setTimeout(() => setVerifiedId(null), 3000);
     } catch (err: any) {
       dispatch(showToast({ message: extractError(err), type: "error" }));
+    }
+  };
+
+  // Fix #5: track deletingId so only that row's button is disabled
+  const handleDelete = async (id: string) => {
+    setDeletingId(id);
+    try {
+      await del(id).unwrap();
+    } catch (err: any) {
+      dispatch(showToast({ message: extractError(err), type: "error" }));
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -89,7 +113,9 @@ export default function PixelsPage() {
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Platform</label>
-              <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}
+              {/* Reset pixelId when platform changes so stale value doesn't fail validation */}
+              <select value={form.type}
+                onChange={e => setForm(f => ({ ...f, type: e.target.value, pixelId: "" }))}
                 className="input">
                 <option value="FACEBOOK">Facebook</option>
                 <option value="GOOGLE">Google Ads</option>
@@ -98,7 +124,12 @@ export default function PixelsPage() {
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Pixel ID</label>
               <input value={form.pixelId} onChange={e => setForm(f => ({ ...f, pixelId: e.target.value }))}
-                required className="input" placeholder="123456789" />
+                required className="input"
+                // Fix #4: placeholder changes per platform
+                placeholder={form.type === "FACEBOOK" ? "1234567890" : "AW-123456789"}
+              />
+              {/* Fix #4: format hint below the input */}
+              <p className="text-[11px] text-gray-400 mt-1">{PIXEL_ID_HINTS[form.type]}</p>
             </div>
           </div>
           <button type="submit" disabled={isCreating} className="btn-primary">
@@ -134,9 +165,13 @@ export default function PixelsPage() {
                   className="p-2 rounded-lg text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors opacity-0 group-hover:opacity-100">
                   <CheckCircle size={14} className={verifiedId === p.id ? "text-green-500" : ""} />
                 </button>
-                <button onClick={() => del(p.id)} title="Remove"
-                  className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100">
-                  <Trash2 size={14} />
+                {/* Fix #5: disabled while this specific row is being deleted */}
+                <button
+                  onClick={() => handleDelete(p.id)}
+                  title="Remove"
+                  disabled={deletingId === p.id}
+                  className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-40 disabled:cursor-not-allowed">
+                  <Trash2 size={14} className={deletingId === p.id ? "animate-pulse" : ""} />
                 </button>
               </div>
             ))}

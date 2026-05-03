@@ -11,12 +11,12 @@ import {
 } from "lucide-react";
 
 export default function AnalyticsPage() {
-  const { data: overview } = useGetOverviewQuery();
-  const { data: linksData } = useGetLinksQuery({ limit: 10 });
+  const { data: overview, isLoading: overviewLoading } = useGetOverviewQuery();
+  const { data: linksData, isLoading: linksLoading } = useGetLinksQuery({ limit: 50 });
 
-  const topLinks = [...(linksData?.links || [])].sort(
-    (a: any, b: any) => b.clickCount - a.clickCount,
-  );
+  const topLinks = [...(linksData?.links || [])]
+    .sort((a: any, b: any) => b.clickCount - a.clickCount)
+    .slice(0, 10);
 
   const maxClicks = topLinks[0]?.clickCount || 1;
 
@@ -87,7 +87,21 @@ export default function AnalyticsPage() {
           </Link>
         </div>
 
-        {topLinks.length === 0 ? (
+        {linksLoading ? (
+          <div className="divide-y divide-gray-50">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="px-5 py-3.5 flex items-center gap-4 animate-pulse">
+                <div className="w-5 h-3 bg-gray-100 rounded" />
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-3 bg-gray-100 rounded w-32" />
+                  <div className="h-2 bg-gray-100 rounded w-48" />
+                  <div className="h-1.5 bg-gray-100 rounded w-full max-w-xs" />
+                </div>
+                <div className="h-4 w-8 bg-gray-100 rounded" />
+              </div>
+            ))}
+          </div>
+        ) : topLinks.length === 0 ? (
           <div className="p-12 text-center">
             <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
               <BarChart2 size={20} className="text-gray-400" />

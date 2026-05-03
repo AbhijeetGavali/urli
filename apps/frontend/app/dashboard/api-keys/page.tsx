@@ -20,6 +20,7 @@ export default function ApiKeysPage() {
     useCreateApiKeyMutation();
   const [del] = useDeleteApiKeyMutation();
   const [name, setName] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   if (user?.plan === "FREE") {
     return (
@@ -62,6 +63,14 @@ export default function ApiKeysPage() {
         showToast({ message: extractError(err), type: "error" }),
       );
     }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`Revoke API key "${name}"? Any integrations using it will stop working.`)) return;
+    setDeletingId(id);
+    try { await del(id).unwrap(); }
+    catch (err: any) { dispatch(showToast({ message: extractError(err), type: "error" })); }
+    finally { setDeletingId(null); }
   };
 
   const handleCopy = (text: string) => {
@@ -152,11 +161,12 @@ export default function ApiKeysPage() {
                   </div>
                 </div>
                 <button
-                  onClick={() => del(k.id)}
+                  onClick={() => handleDelete(k.id, k.name)}
                   title="Revoke key"
-                  className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                  disabled={deletingId === k.id}
+                  className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={14} className={deletingId === k.id ? "animate-pulse" : ""} />
                 </button>
               </div>
             ))}

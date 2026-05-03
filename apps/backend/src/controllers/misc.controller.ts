@@ -1,6 +1,6 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { z } from 'zod'
-import { qrService, utmService, pixelService, workspaceService, apiKeyService, bioService } from '../services/misc.service.js'
+import { qrService, utmService, pixelService, workspaceService, apiKeyService, bioService, bioTemplateService, featureRequestService } from '../services/misc.service.js'
 import { adminService } from '../services/admin.service.js'
 import { handleError } from '../lib/errors.js'
 
@@ -131,7 +131,17 @@ export const apiKeyController = {
 }
 
 // Bio Page
-const bioSchema = z.object({ slug: z.string().min(3).max(50), title: z.string(), description: z.string().optional(), avatar: z.string().optional(), links: z.array(z.any()).optional(), theme: z.string().optional() })
+const bioSchema = z.object({
+  slug: z.string().min(3).max(50),
+  title: z.string(),
+  description: z.string().optional(),
+  avatar: z.string().optional(),
+  links: z.array(z.any()).optional(),
+  theme: z.string().optional(),
+  template: z.string().optional(),
+  sections: z.array(z.any()).optional(),
+  published: z.boolean().optional(),
+})
 export const bioController = {
   get: async (req: FastifyRequest, reply: FastifyReply) => {
     try { return reply.send({ bio: await bioService.get((req as any).currentUser.id) }) }
@@ -140,6 +150,22 @@ export const bioController = {
   getPublic: async (req: FastifyRequest, reply: FastifyReply) => {
     try { return reply.send({ bio: await bioService.getPublic((req.params as any).slug) }) }
     catch (err) { return handleError(reply, err) }
+  },
+  checkSlug: async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { slug } = req.params as any
+      const existing = await bioService.checkSlug(slug, (req as any).currentUser.id)
+      return reply.send({ available: !existing })
+    } catch (err) { return handleError(reply, err) }
+  },
+  trackClick: async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { slug, url } = req.query as any
+      if (!url) return reply.code(400).send({ error: 'Missing url' })
+      // Fire-and-forget: record the click against the bio page owner
+      bioService.recordClick(slug, url, req.ip).catch(() => {})
+      return reply.redirect(302, decodeURIComponent(url))
+    } catch (err) { return handleError(reply, err) }
   },
   upsert: async (req: FastifyRequest, reply: FastifyReply) => {
     try {
@@ -167,6 +193,72 @@ export const adminController = {
       const { id } = req.params as any
       const data = z.object({ plan: z.enum(['FREE', 'PRO', 'BUSINESS']).optional(), role: z.enum(['USER', 'ADMIN']).optional() }).parse(req.body)
       return reply.send({ user: await adminService.updateUser(id, data) })
+    } catch (err) { return handleError(reply, err) }
+  },
+}
+
+// Bio Templates (admin-managed)
+export const bioTemplateController = {
+  list: async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { profession } = req.query as any
+      return reply.send({ templates: await bioTemplateService.list(profession) })
+    } catch (err) { return handleError(reply, err) }
+  },
+  create: async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const data = z.object({
+        profession: z.string(), variantName: z.string(), description: z.string().optional(),
+        thumbnail: z.string().optional(), config: z.any(), sortOrder: z.number().optional(),
+      }).parse(req.body)
+      return reply.code(201).send({ template: await bioTemplateService.create(data) })
+    } catch (err) { return handleError(reply, err) }
+  },
+  update: async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { id } = req.params as any
+      return reply.send({ template: await bioTemplateService.update(id, req.body) })
+    } catch (err) { return handleError(reply, err) }
+  },
+  delete: async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      await bioTemplateService.delete((req.params as any).id)
+      return reply.send({ ok: true })
+    } catch (err) { return handleError(reply, err) }
+  },
+}
+
+// Feature Requests
+export const featureRequestController = {
+  create: async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const user = (req as any).currentUser
+      const data = z.object({
+        description: z.string().min(10).max(1000),
+        category: z.enum(['NEW_SECTION_TYPE', 'NEW_VARIANT', 'NEW_PROFESSION', 'CUSTOMIZATION_OPTION', 'BUG', 'OTHER']).default('OTHER'),
+        isBlocking: z.boolean().default(false),
+        context: z.string().optional(),
+        bioPageId: z.string().optional(),
+      }).parse(req.body)
+      const { bioPageId, ...rest } = data
+      return reply.code(201).send({ request: await featureRequestService.create(user.id, bioPageId ?? null, rest) })
+    } catch (err) { return handleError(reply, err) }
+  },
+  list: async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { status, category, page = 1, limit = 20 } = req.query as any
+      const [requests, total] = await featureRequestService.list({ status, category, page: Number(page), limit: Number(limit) })
+      return reply.send({ requests, total })
+    } catch (err) { return handleError(reply, err) }
+  },
+  update: async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { id } = req.params as any
+      const data = z.object({
+        status: z.enum(['SUBMITTED', 'UNDER_REVIEW', 'PLANNED', 'COMPLETED', 'DECLINED']).optional(),
+        adminNote: z.string().optional(),
+      }).parse(req.body)
+      return reply.send({ request: await featureRequestService.update(id, data) })
     } catch (err) { return handleError(reply, err) }
   },
 }

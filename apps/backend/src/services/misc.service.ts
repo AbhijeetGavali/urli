@@ -1,7 +1,8 @@
 import QRCode from 'qrcode'
 import { nanoid } from 'nanoid'
 import { linkRepo } from '../repos/link.repo.js'
-import { utmRepo, pixelRepo, workspaceRepo, apiKeyRepo, bioRepo } from '../repos/misc.repo.js'
+import { utmRepo, pixelRepo, workspaceRepo, apiKeyRepo, bioRepo, bioTemplateRepo, featureRequestRepo } from '../repos/misc.repo.js'
+import { userRepo } from '../repos/user.repo.js'
 import { AppError } from '../lib/errors.js'
 export const qrService = {
   generate: async (linkId: string, userId: string, format: 'png' | 'svg' = 'png') => {
@@ -55,10 +56,17 @@ export const workspaceService = {
     return ws
   },
 
-  addMember: async (workspaceId: string, requesterId: string, userId: string, role: string) => {
+  addMember: async (workspaceId: string, requesterId: string, userIdOrEmail: string, role: string) => {
     const member = await workspaceRepo.getMember(workspaceId, requesterId)
     if (!member || !['OWNER', 'ADMIN'].includes(member.role)) throw new AppError('Insufficient permissions', 403)
-    return workspaceRepo.addMember(workspaceId, userId, role as any)
+    // Resolve email → real userId
+    const target = userIdOrEmail.includes('@')
+      ? await userRepo.findByEmail(userIdOrEmail)
+      : await userRepo.findById(userIdOrEmail)
+    if (!target) throw new AppError('User not found', 404)
+    const already = await workspaceRepo.getMember(workspaceId, target.id)
+    if (already) throw new AppError('User is already a member', 409)
+    return workspaceRepo.addMember(workspaceId, target.id, role as any)
   },
 
   removeMember: async (workspaceId: string, requesterId: string, userId: string) => {
@@ -88,14 +96,51 @@ export const bioService = {
   getPublic: async (slug: string) => {
     const bio = await bioRepo.findBySlug(slug)
     if (!bio) throw new AppError('Bio page not found', 404)
+    if (!bio.published) throw new AppError('Bio page not found', 404)
     return bio
   },
+  checkSlug: async (slug: string, userId: string) => {
+    const existing = await bioRepo.findBySlug(slug)
+    if (!existing) return null
+    if (existing.userId === userId) return null
+    return existing
+  },
+  recordClick: async (slug: string, url: string, ip: string) => {
+    const bio = await bioRepo.findBySlug(slug)
+    if (!bio) return
+    await bioRepo.recordClick(bio.id, url, ip)
+  },
   upsert: async (userId: string, plan: string, data: any) => {
-    if (plan === 'FREE') throw new AppError('Link-in-bio requires Pro plan', 403)
+    if (data.published && plan === 'FREE') throw new AppError('Publishing requires Pro plan', 403)
     if (data.slug) {
       const existing = await bioRepo.findBySlug(data.slug)
       if (existing && existing.userId !== userId) throw new AppError('Slug already taken', 409)
     }
     return bioRepo.upsert(userId, data)
   },
+}
+
+export const bioTemplateService = {
+  list: (profession?: string) => bioTemplateRepo.findAll(profession),
+  get: async (id: string) => {
+    const t = await bioTemplateRepo.findById(id)
+    if (!t) throw new AppError('Template not found', 404)
+    return t
+  },
+  create: (data: any) => bioTemplateRepo.create(data),
+  update: async (id: string, data: any) => {
+    await bioTemplateService.get(id)
+    return bioTemplateRepo.update(id, data)
+  },
+  delete: async (id: string) => {
+    await bioTemplateService.get(id)
+    return bioTemplateRepo.delete(id)
+  },
+}
+
+export const featureRequestService = {
+  create: (userId: string, bioPageId: string | null, data: any) =>
+    featureRequestRepo.create({ userId, bioPageId, ...data }),
+  list: (filters: any) => featureRequestRepo.findAll(filters),
+  update: (id: string, data: any) => featureRequestRepo.update(id, data),
 }

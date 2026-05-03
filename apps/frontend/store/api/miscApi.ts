@@ -93,6 +93,12 @@ export const bioApi = api.injectEndpoints({
       query: (body) => ({ url: '/bio', method: 'PUT', body }),
       invalidatesTags: ['Bio'],
     }),
+    checkBioSlug: b.query<any, string>({
+      query: (slug) => `/bio/check-slug/${slug}`,
+    }),
+    submitFeatureRequest: b.mutation<any, any>({
+      query: (body) => ({ url: '/feature-requests', method: 'POST', body }),
+    }),
   }),
 })
 
@@ -120,5 +126,5 @@ export const {
 export const { useGetUTMTemplatesQuery, useCreateUTMTemplateMutation, useDeleteUTMTemplateMutation } = utmApi
 export const { useGetPixelsQuery, useCreatePixelMutation, useDeletePixelMutation, useLazyVerifyPixelQuery } = pixelApi
 export const { useGetWorkspacesQuery, useCreateWorkspaceMutation, useAddMemberMutation, useRemoveMemberMutation } = workspaceApi
-export const { useGetBioQuery, useUpsertBioMutation } = bioApi
+export const { useGetBioQuery, useUpsertBioMutation, useLazyCheckBioSlugQuery, useSubmitFeatureRequestMutation } = bioApi
 export const { useGetApiKeysQuery, useCreateApiKeyMutation, useDeleteApiKeyMutation } = apiKeyApi
