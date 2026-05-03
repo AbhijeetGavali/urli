@@ -37,7 +37,14 @@ function resolveGeo(ip: string) {
 export async function redirectRoute(app: FastifyInstance) {
   app.get(
     "/:slug",
-    { config: { rateLimit: { max: 60, timeWindow: "1 minute" } } },
+    {
+      config: {
+        cors: {
+          origin: true, // allow all origins ONLY here
+        },
+        rateLimit: { max: 60, timeWindow: "1 minute" },
+      },
+    },
     async (req, reply) => {
       const { slug } = req.params as { slug: string };
 
