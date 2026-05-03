@@ -17,7 +17,7 @@ export const analyticsController = {
       const user = (req as any).currentUser
       const { linkId } = req.params as any
       const { page = 1, limit = 50 } = req.query as any
-      const result = await analyticsService.getClicks(linkId, user.id, Number(page), Number(limit))
+      const result = await analyticsService.getClicks(linkId, user.id, Number(page), Math.min(Number(limit), 100))
       return reply.send(result)
     } catch (err) { return handleError(reply, err) }
   },

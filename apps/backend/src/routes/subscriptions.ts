@@ -4,7 +4,20 @@ import { authenticate } from "../lib/auth.js";
 
 export async function subscriptionRoutes(app: FastifyInstance) {
   app.get("/plans", subscriptionController.getPlans);
-  app.post("/webhook", subscriptionController.webhook); // no auth - Razorpay calls this
+  // Gap 6: capture raw body for Razorpay HMAC signature verification
+  app.post("/webhook", {
+    preParsing: async (req, _reply, payload) => {
+      const chunks: Buffer[] = []
+      for await (const chunk of payload) chunks.push(chunk as Buffer)
+      const raw = Buffer.concat(chunks).toString('utf8');
+      (req as any).rawBody = raw
+      // Return a readable stream from the raw string so Fastify can still parse JSON
+      const { Readable } = await import('stream')
+      const stream = Readable.from([raw])
+      return stream as any
+    },
+    handler: subscriptionController.webhook,
+  });
   app.post(
     "/create",
     { preHandler: authenticate },

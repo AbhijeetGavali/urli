@@ -13,8 +13,9 @@ const resetSchema = z.object({ token: z.string(), password: z.string().min(8) })
 
 function signTokens(app: any, userId: string) {
   const jti = nanoid()
+  const rjti = nanoid()
   const accessToken = app.jwt.sign({ id: userId, jti }, { expiresIn: '15m' })
-  const refreshToken = app.jwt.sign({ id: userId, type: 'refresh' }, { expiresIn: '7d' })
+  const refreshToken = app.jwt.sign({ id: userId, type: 'refresh', jti: rjti }, { expiresIn: '7d' })
   return { accessToken, refreshToken }
 }
 
@@ -52,7 +53,13 @@ export const authController = {
       if (!refreshToken) return reply.code(400).send({ error: 'Missing refresh token' })
       const payload = req.server.jwt.verify(refreshToken) as any
       if (payload.type !== 'refresh') return reply.code(401).send({ error: 'Invalid token' })
+      // Gap 1: check if this refresh token was already blacklisted
+      if (payload.jti && await redis.get(blacklistKey(payload.jti))) {
+        return reply.code(401).send({ error: 'Token revoked' })
+      }
       const user = await authService.getMe(payload.id)
+      // Gap 1: blacklist the old refresh token (rotation)
+      if (payload.jti) await redis.setex(blacklistKey(payload.jti), 7 * 86400, '1')
       const tokens = signTokens(req.server, user.id)
       return reply.send(tokens)
     } catch (err) { return handleError(reply, err) }
@@ -62,6 +69,14 @@ export const authController = {
     try {
       const payload = req.user as any
       if (payload?.jti) await redis.setex(blacklistKey(payload.jti), 900, '1')
+      // Gap 1: also blacklist the refresh token if provided
+      const { refreshToken } = (req.body as any) || {}
+      if (refreshToken) {
+        try {
+          const rp = req.server.jwt.verify(refreshToken) as any
+          if (rp?.jti) await redis.setex(blacklistKey(rp.jti), 7 * 86400, '1')
+        } catch { /* invalid token — ignore */ }
+      }
       return reply.send({ ok: true })
     } catch (err) { return handleError(reply, err) }
   },

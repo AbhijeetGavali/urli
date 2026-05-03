@@ -43,6 +43,13 @@ export const authService = {
       throw new AppError("Invalid credentials", 401);
     if (!(await bcrypt.compare(password, user.passwordHash)))
       throw new AppError("Invalid credentials", 401);
+    // Gap 3: block unverified accounts
+    if (!user.emailVerified)
+      throw new AppError("Please verify your email before logging in", 403);
+    // Gap 2: clear any pending reset token on successful login (prevent reuse)
+    if (user.resetToken) {
+      await userRepo.update(user.id, { resetToken: null, resetTokenExpiry: null });
+    }
     return sanitize(user);
   },
 

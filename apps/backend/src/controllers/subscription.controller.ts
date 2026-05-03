@@ -38,7 +38,9 @@ export const subscriptionController = {
   webhook: async (req: FastifyRequest, reply: FastifyReply) => {
     try {
       const sig = req.headers['x-razorpay-signature'] as string
-      await subscriptionService.handleWebhook(JSON.stringify(req.body), sig)
+      // Use raw body string for HMAC — re-serializing parsed JSON changes key order
+      const rawBody = (req as any).rawBody ?? JSON.stringify(req.body)
+      await subscriptionService.handleWebhook(rawBody, sig)
       return reply.send({ ok: true })
     } catch (err) { return handleError(reply, err) }
   },

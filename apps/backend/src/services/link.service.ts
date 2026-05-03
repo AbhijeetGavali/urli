@@ -60,6 +60,12 @@ export const linkService = {
   update: async (id: string, userId: string, data: any) => {
     const existing = await linkRepo.findByIdAndUser(id, userId)
     if (!existing) throw new AppError('Link not found', 404)
+    // Gap 4: enforce plan gates on update (same as create)
+    const user = await (await import('../repos/user.repo.js')).userRepo.findById(userId)
+    const plan = user?.plan || 'FREE'
+    if (data.pixelIds?.length && plan === 'FREE') throw new AppError('Retargeting pixels require Pro plan', 403)
+    if (data.pixelIds?.length > 5) throw new AppError('Maximum 5 pixels per link', 403)
+    if (data.smartRules?.length && plan !== 'BUSINESS') throw new AppError('Smart redirects require Business plan', 403)
     if (data.slug && data.slug !== existing.slug) {
       const taken = await linkRepo.findBySlug(data.slug)
       if (taken) throw new AppError('Slug already taken', 409)
