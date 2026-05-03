@@ -62,6 +62,9 @@ export const pixelApi = api.injectEndpoints({
       query: (id) => ({ url: `/pixels/${id}`, method: 'DELETE' }),
       invalidatesTags: ['Pixel'],
     }),
+    verifyPixel: b.query<any, string>({
+      query: (id) => `/pixels/${id}/verify`,
+    }),
   }),
 })
 
@@ -115,7 +118,7 @@ export const {
   useVerifyPaymentMutation, useCancelSubscriptionMutation,
 } = subscriptionApi
 export const { useGetUTMTemplatesQuery, useCreateUTMTemplateMutation, useDeleteUTMTemplateMutation } = utmApi
-export const { useGetPixelsQuery, useCreatePixelMutation, useDeletePixelMutation } = pixelApi
+export const { useGetPixelsQuery, useCreatePixelMutation, useDeletePixelMutation, useLazyVerifyPixelQuery } = pixelApi
 export const { useGetWorkspacesQuery, useCreateWorkspaceMutation, useAddMemberMutation, useRemoveMemberMutation } = workspaceApi
 export const { useGetBioQuery, useUpsertBioMutation } = bioApi
 export const { useGetApiKeysQuery, useCreateApiKeyMutation, useDeleteApiKeyMutation } = apiKeyApi

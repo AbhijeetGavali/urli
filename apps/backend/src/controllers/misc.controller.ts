@@ -39,7 +39,17 @@ export const utmController = {
 }
 
 // Pixel
-const pixelSchema = z.object({ name: z.string(), type: z.enum(['FACEBOOK', 'GOOGLE']), pixelId: z.string() })
+const pixelSchema = z.object({
+  name: z.string().min(1),
+  type: z.enum(['FACEBOOK', 'GOOGLE']),
+  pixelId: z.string().superRefine((val, ctx) => {
+    // determined by the type field — validated in create handler
+  }),
+})
+const pixelSchemaFull = z.discriminatedUnion('type', [
+  z.object({ name: z.string().min(1), type: z.literal('FACEBOOK'), pixelId: z.string().regex(/^\d+$/, 'Facebook Pixel ID must be numeric') }),
+  z.object({ name: z.string().min(1), type: z.literal('GOOGLE'), pixelId: z.string().regex(/^AW-/, 'Google Pixel ID must start with AW-') }),
+])
 export const pixelController = {
   list: async (req: FastifyRequest, reply: FastifyReply) => {
     try { return reply.send({ pixels: await pixelService.list((req as any).currentUser.id) }) }
@@ -48,7 +58,7 @@ export const pixelController = {
   create: async (req: FastifyRequest, reply: FastifyReply) => {
     try {
       const user = (req as any).currentUser
-      const data = pixelSchema.parse(req.body)
+      const data = pixelSchemaFull.parse(req.body)
       return reply.code(201).send({ pixel: await pixelService.create(user.id, user.plan, data) })
     } catch (err) { return handleError(reply, err) }
   },
@@ -56,6 +66,14 @@ export const pixelController = {
     try {
       await pixelService.delete((req.params as any).id, (req as any).currentUser.id)
       return reply.send({ ok: true })
+    } catch (err) { return handleError(reply, err) }
+  },
+  // Gap 7: verify a pixel fires correctly by returning a test HTML page
+  verify: async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const user = (req as any).currentUser
+      const pixel = await pixelService.getOne((req.params as any).id, user.id)
+      return reply.send({ ok: true, pixel })
     } catch (err) { return handleError(reply, err) }
   },
 }

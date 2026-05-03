@@ -1,7 +1,10 @@
 import { prisma } from '../lib/prisma.js'
 
 export const linkRepo = {
-  findBySlug: (slug: string) => prisma.link.findUnique({ where: { slug } }),
+  findBySlug: (slug: string) => prisma.link.findUnique({
+    where: { slug },
+    include: { user: { select: { plan: true } } },
+  }),
   findById: (id: string) => prisma.link.findUnique({ where: { id } }),
   findByIdAndUser: (id: string, userId: string) => prisma.link.findFirst({ where: { id, userId } }),
 
@@ -18,4 +21,7 @@ export const linkRepo = {
   update: (id: string, data: any) => prisma.link.update({ where: { id }, data }),
   delete: (id: string) => prisma.link.delete({ where: { id } }),
   incrementClick: (id: string) => prisma.link.update({ where: { id }, data: { clickCount: { increment: 1 } } }),
+  // Gap 8: remove a pixelId from all links that reference it
+  removePixelId: (pixelId: string) =>
+    prisma.$executeRaw`UPDATE "Link" SET "pixelIds" = array_remove("pixelIds", ${pixelId}) WHERE ${pixelId} = ANY("pixelIds")`,
 }

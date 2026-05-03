@@ -23,7 +23,12 @@ export const utmRepo = {
 
 export const pixelRepo = {
   findByUser: (userId: string) => prisma.pixel.findMany({ where: { userId } }),
+  countByUser: (userId: string) => prisma.pixel.count({ where: { userId } }),
   findByIds: (ids: string[]) => prisma.pixel.findMany({ where: { id: { in: ids } } }),
+  findByIdAndUser: (id: string, userId: string) => prisma.pixel.findFirst({ where: { id, userId } }),
+  // Gap 4: only return pixels that belong to the link owner
+  findByIdsAndUser: (ids: string[], userId: string) =>
+    prisma.pixel.findMany({ where: { id: { in: ids }, userId } }),
   create: (data: any) => prisma.pixel.create({ data }),
   delete: (id: string, userId: string) => prisma.pixel.deleteMany({ where: { id, userId } }),
 }

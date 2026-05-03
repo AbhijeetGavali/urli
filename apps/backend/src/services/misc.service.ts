@@ -3,7 +3,6 @@ import { nanoid } from 'nanoid'
 import { linkRepo } from '../repos/link.repo.js'
 import { utmRepo, pixelRepo, workspaceRepo, apiKeyRepo, bioRepo } from '../repos/misc.repo.js'
 import { AppError } from '../lib/errors.js'
-
 export const qrService = {
   generate: async (linkId: string, userId: string, format: 'png' | 'svg' = 'png') => {
     const link = await linkRepo.findByIdAndUser(linkId, userId)
@@ -25,13 +24,24 @@ export const utmService = {
 
 export const pixelService = {
   list: (userId: string) => pixelRepo.findByUser(userId),
-  create: (userId: string, plan: string, data: any) => {
+  getOne: async (id: string, userId: string) => {
+    const pixel = await pixelRepo.findByIdAndUser(id, userId)
+    if (!pixel) throw new AppError('Pixel not found', 404)
+    return pixel
+  },
+  create: async (userId: string, plan: string, data: any) => {
     if (plan === 'FREE') throw new AppError('Retargeting pixels require Pro plan', 403)
+    // Gap 6: per-user pixel count limit
+    const limit = plan === 'BUSINESS' ? 10 : 5
+    const count = await pixelRepo.countByUser(userId)
+    if (count >= limit) throw new AppError(`Pixel limit reached (${limit} for ${plan} plan)`, 403)
     return pixelRepo.create({ ...data, userId })
   },
   delete: async (id: string, userId: string) => {
     const deleted = await pixelRepo.delete(id, userId)
     if (!deleted.count) throw new AppError('Pixel not found', 404)
+    // Gap 8: clean up stale pixelId references from all links
+    await linkRepo.removePixelId(id)
   },
 }
 

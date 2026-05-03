@@ -6,6 +6,9 @@ import { clickRepo } from "../repos/click.repo.js";
 import { pixelRepo } from "../repos/misc.repo.js";
 import { redis, linkCacheKey, LINK_CACHE_TTL } from "../lib/redis.js";
 
+const PIXEL_CACHE_TTL = 3600; // 1 hour
+const pixelCacheKey = (linkId: string) => `pixels:${linkId}`;
+
 /** Append UTM params stored on the link to the destination URL */
 function buildDestination(link: any): string {
   const utm: Record<string, string | undefined> = {
@@ -32,6 +35,25 @@ function resolveGeo(ip: string) {
   } catch {
     return null;
   }
+}
+
+/** Build pixel script tags + noscript fallbacks */
+function buildPixelScripts(pixels: any[]): string {
+  return pixels
+    .map((p: any) => {
+      if (p.type === "FACEBOOK") {
+        return (
+          `<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${p.pixelId}');fbq('track','PageView');</script>` +
+          // Gap 5: noscript img fallback
+          `<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${p.pixelId}&ev=PageView&noscript=1"/></noscript>`
+        );
+      }
+      if (p.type === "GOOGLE") {
+        return `<script async src="https://www.googletagmanager.com/gtag/js?id=${p.pixelId}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${p.pixelId}');</script>`;
+      }
+      return "";
+    })
+    .join("");
 }
 
 export async function redirectRoute(app: FastifyInstance) {
@@ -143,21 +165,34 @@ export async function redirectRoute(app: FastifyInstance) {
 
       // Pixel injection
       if (link.pixelIds?.length) {
-        const pixels = await pixelRepo.findByIds(link.pixelIds);
+        // Gap 9: skip pixel injection if link owner is on FREE plan (downgrade case)
+        const ownerPlan = link.user?.plan ?? link.ownerPlan;
+        if (ownerPlan === "FREE") {
+          return reply.redirect(301, destination);
+        }
+
+        // Gap 3: cache pixel records to avoid per-redirect DB hit
+        let pixels: any[];
+        const cachedPixels = await redis.get(pixelCacheKey(link.id));
+        if (cachedPixels) {
+          pixels = JSON.parse(cachedPixels);
+        } else {
+          // Gap 4: fetch only pixels that belong to the link owner
+          pixels = await pixelRepo.findByIdsAndUser(link.pixelIds, link.userId);
+          await redis.setex(
+            pixelCacheKey(link.id),
+            PIXEL_CACHE_TTL,
+            JSON.stringify(pixels),
+          );
+        }
+
         if (pixels.length) {
-          const scripts = pixels
-            .map((p: any) => {
-              if (p.type === "FACEBOOK")
-                return `<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${p.pixelId}');fbq('track','PageView');</script>`;
-              if (p.type === "GOOGLE")
-                return `<script async src="https://www.googletagmanager.com/gtag/js?id=${p.pixelId}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${p.pixelId}');</script>`;
-              return "";
-            })
-            .join("");
+          const scripts = buildPixelScripts(pixels);
+          // Gap 2: loading indicator while pixel scripts fire + redirect
           return reply
             .type("text/html")
             .send(
-              `<!DOCTYPE html><html><head>${scripts}<meta http-equiv="refresh" content="0;url=${destination}"></head><body><script>window.location.href="${destination}"</script></body></html>`,
+              `<!DOCTYPE html><html><head>${scripts}<meta http-equiv="refresh" content="0;url=${destination}"></head><body style="margin:0;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#6b7280;font-size:14px"><span>Redirecting…</span><script>window.location.href="${destination}"</script></body></html>`,
             );
         }
       }

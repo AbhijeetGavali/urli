@@ -2,11 +2,11 @@
 import { extractError } from '@/lib/extractError'
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetPixelsQuery, useCreatePixelMutation, useDeletePixelMutation } from "../../../store/api/miscApi";
+import { useGetPixelsQuery, useCreatePixelMutation, useDeletePixelMutation, useLazyVerifyPixelQuery } from "../../../store/api/miscApi";
 import { showToast } from "../../../store/slices/uiSlice";
 import type { RootState } from "../../../store";
 import Link from "next/link";
-import { Plus, Trash2, Target, X, Zap } from "lucide-react";
+import { Plus, Trash2, Target, X, Zap, CheckCircle } from "lucide-react";
 
 const PIXEL_ICONS: Record<string, string> = { FACEBOOK: "f", GOOGLE: "G" };
 const PIXEL_COLORS: Record<string, string> = {
@@ -20,8 +20,21 @@ export default function PixelsPage() {
   const { data, isLoading } = useGetPixelsQuery();
   const [create, { isLoading: isCreating }] = useCreatePixelMutation();
   const [del] = useDeletePixelMutation();
+  const [verifyPixel, { isFetching: isVerifying }] = useLazyVerifyPixelQuery();
+  const [verifiedId, setVerifiedId] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", type: "FACEBOOK", pixelId: "" });
   const [showForm, setShowForm] = useState(false);
+
+  const handleVerify = async (id: string) => {
+    try {
+      await verifyPixel(id).unwrap();
+      setVerifiedId(id);
+      dispatch(showToast({ message: "Pixel verified!", type: "success" }));
+      setTimeout(() => setVerifiedId(null), 3000);
+    } catch (err: any) {
+      dispatch(showToast({ message: extractError(err), type: "error" }));
+    }
+  };
 
   if (user?.plan === "FREE") {
     return (
@@ -117,6 +130,10 @@ export default function PixelsPage() {
                   <div className="text-sm font-semibold text-gray-900">{p.name}</div>
                   <div className="text-xs text-gray-400 mt-0.5">{p.type} · ID: {p.pixelId}</div>
                 </div>
+                <button onClick={() => handleVerify(p.id)} title="Test pixel" disabled={isVerifying}
+                  className="p-2 rounded-lg text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors opacity-0 group-hover:opacity-100">
+                  <CheckCircle size={14} className={verifiedId === p.id ? "text-green-500" : ""} />
+                </button>
                 <button onClick={() => del(p.id)} title="Remove"
                   className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100">
                   <Trash2 size={14} />

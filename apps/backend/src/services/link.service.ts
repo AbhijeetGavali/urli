@@ -12,6 +12,9 @@ export const linkService = {
     if (data.pixelIds?.length && plan === 'FREE') {
       throw new AppError('Retargeting pixels require Pro plan', 403)
     }
+    if (data.pixelIds?.length > 5) {
+      throw new AppError('Maximum 5 pixels per link', 403)
+    }
     if (data.smartRules && plan !== 'BUSINESS') {
       throw new AppError('Smart redirects require Business plan', 403)
     }

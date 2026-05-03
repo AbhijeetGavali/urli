@@ -19,6 +19,7 @@ export async function pixelRoutes(app: FastifyInstance) {
   app.get('/', pixelController.list)
   app.post('/', pixelController.create)
   app.delete('/:id', pixelController.delete)
+  app.get('/:id/verify', pixelController.verify)
 }
 
 export async function workspaceRoutes(app: FastifyInstance) {
