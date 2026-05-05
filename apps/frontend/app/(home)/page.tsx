@@ -95,7 +95,7 @@ export default function HomePage() {
         return;
       }
       if (data.link) {
-        const short = `${process.env.NEXT_PUBLIC_SHORT_DOMAIN || "urli.ideasprout.in"}/${data.link.slug}`;
+        const short = `${process.env.NEXT_PUBLIC_SHORT_DOMAIN || "api-urli.ideasprout.in"}/${data.link.slug}`;
         setDemoResult(short);
         setDemoSlug(data.link.slug);
       }
