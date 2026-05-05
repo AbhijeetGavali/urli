@@ -25,6 +25,7 @@ const createSchema = z.object({
 export const linkController = {
   publicShorten: async (req: FastifyRequest, reply: FastifyReply) => {
     try {
+      console.log('Public shorten request from', req.ip)
       const { originalUrl } = z.object({ originalUrl: z.string().url() }).parse(req.body)
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
       let slug = nanoid(6)
@@ -80,6 +81,19 @@ export const linkController = {
       const { id } = req.params as any
       await linkService.delete(id, user.id)
       return reply.send({ ok: true })
+    } catch (err) { return handleError(reply, err) }
+  },
+
+  claimPublicLink: async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const user = (req as any).currentUser
+      const { slug } = z.object({ slug: z.string() }).parse(req.body)
+      const link = await linkRepo.findBySlug(slug)
+      if (!link) return reply.code(404).send({ error: 'Link not found' })
+      if (link.userId) return reply.code(409).send({ error: 'Link already claimed' })
+      const updated = await linkRepo.update(link.id, { userId: user.id, expiresAt: null })
+      await redis.del(linkCacheKey(slug))
+      return reply.send({ link: updated })
     } catch (err) { return handleError(reply, err) }
   },
 }

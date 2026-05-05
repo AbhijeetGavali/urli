@@ -6,7 +6,7 @@ import rateLimit from "@fastify/rate-limit";
 import jwt from "@fastify/jwt";
 import { redis } from "./lib/redis.js";
 import { authRoutes } from "./routes/auth.js";
-import { linkRoutes } from "./routes/links.js";
+import { linkRoutes, publicLinkRoutes } from "./routes/links.js";
 import { analyticsRoutes } from "./routes/analytics.js";
 import { subscriptionRoutes } from "./routes/subscriptions.js";
 import { redirectRoute } from "./routes/redirect.js";
@@ -35,6 +35,7 @@ await app.register(jwt, { secret: process.env.JWT_SECRET! });
 await app.register(rateLimit, { max: 100, timeWindow: "1 minute", redis });
 
 await app.register(authRoutes, { prefix: "/auth" });
+await app.register(publicLinkRoutes, { prefix: "/public-links" });
 await app.register(linkRoutes, { prefix: "/links" });
 await app.register(analyticsRoutes, { prefix: "/analytics" });
 await app.register(subscriptionRoutes, { prefix: "/subscriptions" });

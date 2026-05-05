@@ -19,7 +19,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 
-function UpsellModal({ shortUrl, onClose }: { shortUrl: string; onClose: () => void }) {
+function UpsellModal({ shortUrl, slug, onClose }: { shortUrl: string; slug: string; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
@@ -56,7 +56,7 @@ function UpsellModal({ shortUrl, onClose }: { shortUrl: string; onClose: () => v
         </ul>
 
         <Link
-          href={`/register?ref=demo`}
+          href={`/register?slug=${encodeURIComponent(slug)}`}
           className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm py-3 rounded-xl transition-colors shadow-sm"
         >
           Create free account <ArrowRight size={14} />
@@ -71,6 +71,7 @@ export default function HomePage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [demoUrl, setDemoUrl] = useState("");
   const [demoResult, setDemoResult] = useState("");
+  const [demoSlug, setDemoSlug] = useState("");
   const [demoLoading, setDemoLoading] = useState(false);
   const [demoCopied, setDemoCopied] = useState(false);
   const [showUpsell, setShowUpsell] = useState(false);
@@ -83,7 +84,7 @@ export default function HomePage() {
     setDemoError("");
     setDemoResult("");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/links/shorten`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/public-links/shorten`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ originalUrl: demoUrl }),
@@ -96,6 +97,7 @@ export default function HomePage() {
       if (data.link) {
         const short = `${process.env.NEXT_PUBLIC_SHORT_DOMAIN || "urli.ideasprout.in"}/${data.link.slug}`;
         setDemoResult(short);
+        setDemoSlug(data.link.slug);
       }
     } catch {
       setDemoError("Something went wrong. Please try again.");
@@ -117,7 +119,7 @@ export default function HomePage() {
   return (
     <>
       {showUpsell && (
-        <UpsellModal shortUrl={`https://${demoResult}`} onClose={() => setShowUpsell(false)} />
+        <UpsellModal shortUrl={`https://${demoResult}`} slug={demoSlug} onClose={() => setShowUpsell(false)} />
       )}
 
       <script

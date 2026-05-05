@@ -19,6 +19,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnTo = searchParams?.get("returnTo") || undefined;
+  const slug = searchParams?.get("slug") || undefined;
   const dispatch = useDispatch();
   const [register, { isLoading }] = useRegisterMutation();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -34,6 +35,15 @@ export default function RegisterPage() {
     setError("");
     try {
       const data = await register({ ...form, termsAccepted: true }).unwrap();
+      if (slug) {
+        try {
+          await fetch(`${process.env.NEXT_PUBLIC_API_URL}/public-links/claim`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.accessToken}` },
+            body: JSON.stringify({ slug }),
+          });
+        } catch { /* non-critical */ }
+      }
       handleAuthSuccess(dispatch, data, router, returnTo);
     } catch (err: any) {
       setError(extractError(err));

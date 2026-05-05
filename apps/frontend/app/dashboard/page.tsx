@@ -32,7 +32,6 @@ import type { RootState } from "../../store";
 
 export default function DashboardPage() {
   const dispatch = useDispatch();
-  const user = useSelector((s: RootState) => s.auth.user);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [showCreate, setShowCreate] = useState(false);

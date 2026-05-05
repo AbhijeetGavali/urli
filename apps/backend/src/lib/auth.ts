@@ -5,6 +5,7 @@ import { redis, blacklistKey } from './redis.js'
 export async function authenticate(req: FastifyRequest, reply: FastifyReply) {
   try {
     // Support API key auth via Bearer urli_xxx token
+    console.log("Public shorten request from", req.ip);
     const authHeader = req.headers.authorization || ''
     if (authHeader.startsWith('Bearer urli_')) {
       const key = authHeader.slice(7)
