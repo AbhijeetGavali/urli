@@ -12,7 +12,60 @@ import {
   BarChart2,
   Target,
   Clock,
+  QrCode,
+  Sparkles,
+  Copy,
+  CheckCheck,
+  AlertCircle,
 } from "lucide-react";
+
+function UpsellModal({ shortUrl, onClose }: { shortUrl: string; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+          <X size={18} />
+        </button>
+
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+            <Zap size={13} className="text-white" fill="white" />
+          </div>
+          <span className="font-bold text-gray-900">Unlock your link forever</span>
+        </div>
+        <p className="text-sm text-gray-500 mb-4">
+          Your link <span className="font-mono text-blue-600 text-xs">{shortUrl}</span> expires in 7 days.
+          Create a free account to keep it alive and unlock:
+        </p>
+
+        <ul className="space-y-2 mb-5">
+          {[
+            ["No expiry", "Links live as long as your account"],
+            ["Click analytics", "Country, device, referrer breakdown"],
+            ["QR codes", "Download PNG/SVG for any link"],
+            ["Custom slugs", "Brand your short links"],
+            ["50 links/mo free", "No credit card needed"],
+          ].map(([title, desc]) => (
+            <li key={title} className="flex items-start gap-2.5">
+              <Check size={14} className="text-emerald-500 mt-0.5 shrink-0" />
+              <span className="text-sm text-gray-700">
+                <span className="font-semibold">{title}</span> — {desc}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <Link
+          href={`/register?ref=demo`}
+          className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm py-3 rounded-xl transition-colors shadow-sm"
+        >
+          Create free account <ArrowRight size={14} />
+        </Link>
+        <p className="text-center text-xs text-gray-400 mt-2">No credit card · 30-day Pro trial included</p>
+      </div>
+    </div>
+  );
+}
 
 export default function HomePage() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -20,24 +73,32 @@ export default function HomePage() {
   const [demoResult, setDemoResult] = useState("");
   const [demoLoading, setDemoLoading] = useState(false);
   const [demoCopied, setDemoCopied] = useState(false);
+  const [showUpsell, setShowUpsell] = useState(false);
+  const [demoError, setDemoError] = useState("");
 
   const handleDemo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!demoUrl) return;
     setDemoLoading(true);
+    setDemoError("");
+    setDemoResult("");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/links`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/links/shorten`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ originalUrl: demoUrl }),
       });
       const data = await res.json();
-      if (data.link)
-        setDemoResult(
-          `${process.env.NEXT_PUBLIC_SHORT_DOMAIN || "urli.ideasprout.in"}/${data.link.slug}`,
-        );
+      if (!res.ok) {
+        setDemoError(data.message || "Too many requests. Try again later.");
+        return;
+      }
+      if (data.link) {
+        const short = `${process.env.NEXT_PUBLIC_SHORT_DOMAIN || "urli.ideasprout.in"}/${data.link.slug}`;
+        setDemoResult(short);
+      }
     } catch {
-      setDemoResult("urli.ideasprout.in/demo-abc123");
+      setDemoError("Something went wrong. Please try again.");
     } finally {
       setDemoLoading(false);
     }
@@ -49,8 +110,16 @@ export default function HomePage() {
     setTimeout(() => setDemoCopied(false), 2000);
   };
 
+  const qrUrl = demoResult
+    ? `https://qr.ideasprout.in/?url=${encodeURIComponent(`https://${demoResult}`)}`
+    : "";
+
   return (
     <>
+      {showUpsell && (
+        <UpsellModal shortUrl={`https://${demoResult}`} onClose={() => setShowUpsell(false)} />
+      )}
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -201,25 +270,57 @@ export default function HomePage() {
               </button>
             </form>
 
-            {demoResult && (
-              <div className="mt-2 flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5">
-                <Link2 size={14} className="text-blue-400 shrink-0" />
-                <span className="text-blue-300 text-sm font-mono flex-1 truncate text-left">
-                  {demoResult}
-                </span>
-                <button
-                  onClick={copyDemo}
-                  className="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors shrink-0"
-                >
-                  {demoCopied ? "✓ Copied" : "Copy"}
-                </button>
-                <Link
-                  href="/register"
-                  className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg transition-colors font-medium shrink-0"
-                >
-                  Save →
-                </Link>
+            {demoError && (
+              <div className="mt-2 flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5">
+                <AlertCircle size={14} className="text-red-400 shrink-0" />
+                <span className="text-red-300 text-sm">{demoError}</span>
               </div>
+            )}
+
+            {demoResult && (
+              <>
+                {/* 7-day notice */}
+                <div className="mt-2 flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-2">
+                  <Clock size={13} className="text-amber-400 shrink-0" />
+                  <span className="text-amber-300 text-xs flex-1">
+                    This link expires in <strong>7 days</strong>.{" "}
+                    <button onClick={() => setShowUpsell(true)} className="underline hover:text-amber-200 transition-colors">
+                      Create a free account
+                    </button>{" "}
+                    to keep it forever.
+                  </span>
+                </div>
+
+                {/* Result row */}
+                <div className="mt-1.5 flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5">
+                  <Link2 size={14} className="text-blue-400 shrink-0" />
+                  <span className="text-blue-300 text-sm font-mono flex-1 truncate text-left">
+                    {demoResult}
+                  </span>
+                  <button
+                    onClick={copyDemo}
+                    title="Copy"
+                    className="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors shrink-0 flex items-center gap-1"
+                  >
+                    {demoCopied ? <><CheckCheck size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
+                  </button>
+                  <a
+                    href={qrUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Generate QR code"
+                    className="text-xs bg-violet-600/80 hover:bg-violet-600 text-white px-3 py-1.5 rounded-lg transition-colors shrink-0 flex items-center gap-1"
+                  >
+                    <QrCode size={12} /> QR
+                  </a>
+                  <button
+                    onClick={() => setShowUpsell(true)}
+                    className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg transition-colors font-medium shrink-0"
+                  >
+                    Save →
+                  </button>
+                </div>
+              </>
             )}
           </div>
 

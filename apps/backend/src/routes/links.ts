@@ -3,6 +3,11 @@ import { linkController } from '../controllers/link.controller.js'
 import { authenticate } from '../lib/auth.js'
 
 export async function linkRoutes(app: FastifyInstance) {
+  // Public: anonymous shorten (7-day expiry, rate-limited per IP)
+  app.post('/shorten', {
+    config: { rateLimit: { max: 5, timeWindow: '1 hour' } },
+  }, linkController.publicShorten)
+
   app.addHook('preHandler', authenticate)
   app.post('/', linkController.create)
   app.get('/', linkController.list)

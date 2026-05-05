@@ -2,6 +2,9 @@ import type { FastifyRequest, FastifyReply } from 'fastify'
 import { z } from 'zod'
 import { linkService } from '../services/link.service.js'
 import { handleError } from '../lib/errors.js'
+import { nanoid } from 'nanoid'
+import { linkRepo } from '../repos/link.repo.js'
+import { redis, linkCacheKey, LINK_CACHE_TTL } from '../lib/redis.js'
 
 const createSchema = z.object({
   originalUrl: z.string().url(),
@@ -20,6 +23,21 @@ const createSchema = z.object({
 })
 
 export const linkController = {
+  publicShorten: async (req: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { originalUrl } = z.object({ originalUrl: z.string().url() }).parse(req.body)
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      let slug = nanoid(6)
+      let attempts = 0
+      while (await linkRepo.findBySlug(slug)) {
+        slug = nanoid(6)
+        if (++attempts > 10) throw new Error('Could not generate unique slug')
+      }
+      const link = await linkRepo.create({ originalUrl, slug, expiresAt })
+      await redis.setex(linkCacheKey(slug), LINK_CACHE_TTL, JSON.stringify(link))
+      return reply.code(201).send({ link })
+    } catch (err) { return handleError(reply, err) }
+  },
   create: async (req: FastifyRequest, reply: FastifyReply) => {
     try {
       const user = (req as any).currentUser
