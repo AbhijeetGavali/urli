@@ -18,7 +18,7 @@ Key differentiators: No ads ever, link expiry, retargeting pixels, UTM presets, 
 - Payments: Razorpay (30-day free trial on Pro/Business)
 - Auth: JWT (access 15min + refresh 7d) + Google OAuth
 - Email: Nodemailer + Gmail SMTP (GMAIL_USER, GMAIL_APP_PASSWORD)
-- Infra: Docker + docker-compose (postgres, redis, backend)
+- Infra: Docker + docker compose (postgres, redis, backend)
 
 ## STRICT BACKEND ARCHITECTURE (NEVER DEVIATE)
 ```
@@ -152,7 +152,7 @@ User, Link, Click, UTMTemplate, Workspace, WorkspaceMember, Subscription, ApiKey
 ## Build Status - COMPLETE
 - [x] .context + .questions
 - [x] Prisma schema (all models with resetToken, verifyToken, emailVerified)
-- [x] docker-compose (postgres, redis, backend)
+- [x] docker compose (postgres, redis, backend)
 - [x] Backend: routes/controller/service/repo pattern
 - [x] Auth: register, login, google, refresh, logout, verify-email, forgot/reset password
 - [x] Links: CRUD + Redis cache + redirect + smart rules + pixel injection

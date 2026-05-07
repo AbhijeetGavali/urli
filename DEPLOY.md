@@ -17,7 +17,7 @@ SSH into your EC2 instance and run:
 ```bash
 # Install Docker + Docker Compose plugin
 sudo apt-get update
-sudo apt-get install -y docker.io docker-compose-plugin
+sudo apt-get install -y docker.io
 sudo usermod -aG docker ubuntu
 newgrp docker
 

@@ -77,8 +77,8 @@ jobs:
 
             # Deploy (postgres/redis are preserved; only backend recreated)
             cp docker-compose.prod.yml docker-compose.yml
-            docker-compose down --remove-orphans
-            docker-compose up -d --force-recreate
+            docker compose down --remove-orphans
+            docker compose up -d --force-recreate
 
             # Clean up old images
             docker image prune -f
